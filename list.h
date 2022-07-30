@@ -98,6 +98,13 @@ bool list_get(struct list* ths, void* dest, size_t index)
     return true;
 }
 
+bool list_set(struct list* ths, void* value, size_t index)
+{
+    memcpy((char*)ths->arr + index * ths->of_size, value, ths->of_size);
+
+    return true;
+}
+
 void list_sort(struct list* ths, int (*comp)(const void*, const void*))
 {
     qsort(ths->arr, ths->size, ths->of_size, comp);
