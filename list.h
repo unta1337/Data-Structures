@@ -207,6 +207,13 @@ void list_set(struct list* ths, size_t index, void* value)
     memcpy((char*)ths->arr + index * ths->of_size, value, ths->of_size);
 }
 
+/*
+    리스트의 특정 위치에 요소 추가
+
+    @param ths 대상 리스트 포인터
+    @param index 새로운 요소를 추가할 위치
+    @param value 새로 삽입할 요소를 가리키는 포인터
+ */
 void list_insert(struct list* ths, size_t index, void* value)
 {
     if (index >= ths->size + 1)
@@ -223,6 +230,12 @@ void list_insert(struct list* ths, size_t index, void* value)
     memcpy((char*)ths->arr + index * ths->of_size, value, ths->of_size);
 }
 
+/*
+    리스트의 특정 위치의 요소 삭제
+
+    @param ths 대상 리스트 포인터
+    @param index 삭제할 요소의 인덱스
+ */
 void list_remove(struct list* ths, size_t index)
 {
     if (index >= ths->size)
