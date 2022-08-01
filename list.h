@@ -10,45 +10,9 @@ struct list
 {
     void* arr;          // 실제 데이터를 저장할 공간에 대한 포인터.
     size_t capacity;    // 리스트의 한계 용량.
+    size_t size;        // 리스트의 길이.
     size_t of_size;     // 리스트 단일 요소의 크기.
-    size_t size;        // 리스트의 저장된 요소의 개수.
 };
-
-/*
-    새로운 리스트 생성
-
-    @param of_size 리스트에 저장할 단일 요소의 크기
-    @return 동적으로 생성된 리스트의 주소
- */
-struct list* list_create(size_t of_size)
-{
-    struct list* ths = (struct list*)malloc(sizeof(struct list));
-
-    ths->arr = malloc(of_size);
-    if (ths->arr == NULL)
-    {
-        fprintf(stderr, "stderr: Failed to allocate memory for list in list_create().\n");
-        abort();
-        return NULL;
-    }
-
-    ths->capacity = 1;
-    ths->of_size = of_size;
-    ths->size = 0;
-
-    return ths;
-}
-
-/*
-    리스트 삭제
-
-    @param ths 대상 리스트 포인터
- */
-void list_delete(struct list* ths)
-{
-    free(ths->arr);
-    free(ths);
-}
 
 /*
     *내부 함수
@@ -82,6 +46,138 @@ void __list_half(struct list* ths)
         fprintf(stderr, "stderr: Failed to reallocate memory for list in __list_half().\n");
         abort();
     }
+}
+
+/*
+    *내부 함수
+    리스트의 크기를 2의 제곱수로 교정
+
+    @param ths 대상 리스트 포인터
+ */
+void __list_capacity_correction(struct list* ths)
+{
+    size_t correct_capacity = 1;
+
+    while (correct_capacity <= ths->size)
+        correct_capacity *= 2;
+
+    ths->arr = realloc(ths->arr, correct_capacity * ths->of_size);
+    ths->capacity = correct_capacity;
+}
+
+/*
+    새로운 리스트 생성
+
+    @param of_size 리스트에 저장할 단일 요소의 크기
+    @return 동적으로 생성된 리스트의 주소
+ */
+struct list* list_create(size_t of_size)
+{
+    struct list* ths = (struct list*)malloc(sizeof(struct list));
+
+    ths->arr = malloc(of_size);
+    if (ths->arr == NULL)
+    {
+        fprintf(stderr, "stderr: Failed to allocate memory for list in list_create().\n");
+        abort();
+    }
+
+    ths->capacity = 1;
+    ths->size = 0;
+    ths->of_size = of_size;
+
+    return ths;
+}
+
+/*
+    배열로부터 새로운 리스트 생성
+
+    @param arr 리스트로 생성할 배열의 포인터
+    @param size 리스트로 생성할 배열의 길이
+    @param of_size 리스트로 생성할 배열의 단일 요소의 크기
+    @return 동적으로 생성된 리스트의 주소
+ */
+struct list* list_create_from_array(void* arr, size_t size, size_t of_size)
+{
+    if (arr == NULL)
+    {
+        fprintf(stderr, "stderr: Failed to initialize list since the original array is NULL.\n");
+        abort();
+    }
+    else if (of_size == 0)
+    {
+        fprintf(stderr, "stderr: Size of a single element of list cannot be zero.");
+        abort();
+    }
+
+    struct list* ths = (struct list*)malloc(sizeof(struct list));
+
+    ths->arr = malloc(size * of_size);
+    if (ths->arr == NULL)
+    {
+        fprintf(stderr, "stderr: Failed to allocate memory for list in list_create_from_array().\n");
+        abort();
+    }
+
+    ths->capacity = size;
+    ths->size = size;
+    ths->of_size = of_size;
+
+    memcpy(ths->arr, arr, size * of_size);
+    __list_capacity_correction(ths);
+
+    return ths;
+}
+
+/*
+    기본값을 설정하여 새로운 리스트 생성
+
+    @param value 리스트의 기본값으로 설정할 값의 포인터
+    @param size 생성할 리스트의 길이
+    @param of_size 리스트의 기본값으로 설정할 값의 크기
+    @return 동적으로 생성된 리스트의 주소
+ */
+struct list* list_create_from_value(void* value, size_t size, size_t of_size)
+{
+    if (value == NULL)
+    {
+        fprintf(stderr, "stderr: Failed to initialize list since the original array is NULL.\n");
+        abort();
+    }
+    else if (of_size == 0)
+    {
+        fprintf(stderr, "stderr: Size of a single element of list cannot be zero.");
+        abort();
+    }
+
+    struct list* ths = (struct list*)malloc(sizeof(struct list));
+    ths->arr = malloc(size * of_size);
+    if (ths->arr == NULL)
+    {
+        fprintf(stderr, "stderr: Failed to allocate memory for list in list_create_from_array().\n");
+        abort();
+    }
+
+    ths->capacity = size;
+    ths->size = size;
+    ths->of_size = of_size;
+
+    for (size_t i = 0; i < size; i++)
+        memcpy((char*)ths->arr + i * of_size, value, of_size);
+    __list_capacity_correction(ths);
+    
+    return ths;
+}
+
+/*
+    리스트 삭제
+
+    @param ths 대상 리스트 포인터
+ */
+void list_delete(struct list* ths)
+{
+    free(ths->arr);
+    free(ths);
 }
 
 /*
