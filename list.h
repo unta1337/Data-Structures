@@ -236,7 +236,26 @@ void list_push(struct list* ths, void* value)
 }
 
 /*
-    리스트의 마지막 요소를 dest에 복사 후 삭제
+    리스트의 마지막 요소를 삭제
+
+    @param ths 대상 리스트 포인터
+ */
+void list_pop(struct list* ths)
+{
+    if (list_empty(ths))
+    {
+        fprintf(stderr, "stderr: Failed to pop a element from list because the list is empty.\n");
+        abort();
+    }
+
+    ths->size--;
+
+    if (ths->size == ths->capacity / 2)
+        __list_half(ths);
+}
+
+/*
+    리스트의 특정 요소를 dest에 복사
 
     dest는 요소를 복사할 수 있을 만큼의 공간을 가리키는 포인터 또는 주소여야 한다.
     dest는 삽입한 요소를 담을 수 있는 적절한 포인터 자료형이거나 void*여야 한다.
@@ -248,26 +267,6 @@ void list_push(struct list* ths, void* value)
        또는,
        int* temp_v = malloc(2 * sizeof(int));
        list_pop(lst, temp_v);
-
-    @param ths 대상 리스트 포인터
-    @param dest 요소를 복사할 목적지
- */
-void list_pop(struct list* ths, void* dest)
-{
-    if (list_empty(ths))
-    {
-        fprintf(stderr, "stderr: Failed to pop a element from list because the list is empty.\n");
-        abort();
-    }
-
-    if (ths->size == ths->capacity / 2)
-        __list_half(ths);
-
-    memcpy(dest, (char*)ths->arr + --ths->size * ths->of_size, ths->of_size);
-}
-
-/*
-    리스트의 특정 요소를 dest에 복사
 
     @param ths 대상 리스트 포인터
     @param dest 요소를 복사할 목적지
@@ -341,10 +340,7 @@ void list_remove(struct list* ths, size_t index)
     }
 
     memmove((char*)ths->arr + index * ths->of_size, (char*)ths->arr + (index + 1) * ths->of_size, (ths->size - index) * ths->of_size);
-
-    void* temp = malloc(ths->of_size);
-    list_pop(ths, temp);
-    free(temp);
+    list_pop(ths);
 }
 
 /*
