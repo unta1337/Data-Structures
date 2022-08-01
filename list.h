@@ -54,6 +54,9 @@ void __list_double(struct list* ths)
  */
 void __list_half(struct list* ths)
 {
+    if (ths->size == 0)
+        return;
+
     ths->capacity /= 2;
     ths->arr = realloc(ths->arr, ths->capacity * ths->of_size);
     if (ths->arr == NULL)
@@ -77,6 +80,12 @@ void __list_capacity_correction(struct list* ths)
         correct_capacity *= 2;
 
     ths->arr = realloc(ths->arr, correct_capacity * ths->of_size);
+    if (ths->arr == NULL)
+    {
+        fprintf(stderr, "stderr: Failed to reallocate memory for stack in __list_capacity_correction().\n");
+        abort();
+    }
+
     ths->capacity = correct_capacity;
 }
 
