@@ -10,8 +10,8 @@ struct list
 {
     void* arr;          // 실제 데이터를 저장할 공간에 대한 포인터.
     size_t capacity;    // 리스트의 한계 용량.
-    size_t of_size;     // 리스트 단일 요소의 크기. (sizeof(arr[0]))
-    size_t size;        // 리스트의 실제 크기. (저장된 요소의 개수)
+    size_t of_size;     // 리스트 단일 요소의 크기.
+    size_t size;        // 리스트의 저장된 요소의 개수.
 };
 
 /*
@@ -205,6 +205,37 @@ void list_set(struct list* ths, size_t index, void* value)
     }
 
     memcpy((char*)ths->arr + index * ths->of_size, value, ths->of_size);
+}
+
+void list_insert(struct list* ths, size_t index, void* value)
+{
+    if (index >= ths->size + 1)
+    {
+        fprintf(stderr, "stderr: List index out of range. Expected less then %zu but found %zu.\n", ths->size, index);
+        abort();
+    }
+
+    void* temp = malloc(ths->of_size);
+    list_push(ths, temp);
+    free(temp);
+
+    memmove((char*)ths->arr + (index + 1) * ths->of_size, (char*)ths->arr + index * ths->of_size, (ths->size - index - 1) * ths->of_size);
+    memcpy((char*)ths->arr + index * ths->of_size, value, ths->of_size);
+}
+
+void list_remove(struct list* ths, size_t index)
+{
+    if (index >= ths->size)
+    {
+        fprintf(stderr, "stderr: List index out of range. Expected less then %zu but found %zu.\n", ths->size, index);
+        abort();
+    }
+
+    memmove((char*)ths->arr + index * ths->of_size, (char*)ths->arr + (index + 1) * ths->of_size, (ths->size - index) * ths->of_size);
+
+    void* temp = malloc(ths->of_size);
+    list_pop(ths, temp);
+    free(temp);
 }
 
 /*
