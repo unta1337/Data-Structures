@@ -98,6 +98,29 @@ void __queue_half(struct queue* ths)
 }
 
 /**
+ * *내부 함수
+ *
+ * @brief 큐의 크기를 2의 제곱수로 교정
+ * @param ths 대상 큐 포인터
+ */
+void __queue_capacity_correction(struct queue* ths)
+{
+    size_t correct_capacity = 1;
+
+    while (correct_capacity <= ths->size + 1)
+        correct_capacity *= 2;
+
+    ths->arr = realloc(ths->arr, correct_capacity * ths->of_size);
+    if (ths->arr == NULL)
+    {
+        fprintf(stderr, "stderr: Failed to reallocate memory for queue in __queue_capacity_correction().\n");
+        abort();
+    }
+
+    ths->capacity = correct_capacity;
+}
+
+/**
  * @brief 새로운 큐 생성
  * @param of_size 큐에 저장할 단일 요소의 크기
  * @return 동적으로 생성된 큐의 주소
@@ -119,6 +142,88 @@ struct queue* queue_create(size_t of_size)
     ths->head = 0;
     ths->tail = 0;
 
+    return ths;
+}
+
+/**
+ * @brief 배열로부터 새로운 큐 생성
+ * @param arr 큐로 생성할 배열의 포인터
+ * @param size 큐로 생성할 배열의 길이
+ * @param of_size 큐로 생성할 배열의 단일 요소의 크기
+ * @return 동적으로 생성된 큐의 주소
+ */
+struct queue* queue_create_from_array(void* arr, size_t size, size_t of_size)
+{
+    if (arr == NULL)
+    {
+        fprintf(stderr, "stderr: Failed to initialize queue since the original array is NULL.\n");
+        abort();
+    }
+    else if (of_size == 0)
+    {
+        fprintf(stderr, "stderr: Size of a single element of queue cannot be zero.");
+        abort();
+    }
+
+    struct queue* ths = (struct queue*)malloc(sizeof(struct queue));
+
+    ths->arr = malloc(size * of_size);
+    if (ths->arr == NULL)
+    {
+        fprintf(stderr, "stderr: Failed to allocate memory for queue in queue_create_from_array().\n");
+        abort();
+    }
+
+    ths->capacity = size;
+    ths->size = size;
+    ths->of_size = of_size;
+    ths->head = 0;
+    ths->tail = size;
+
+    memcpy(ths->arr, arr, size * of_size);
+    __queue_capacity_correction(ths);
+
+    return ths;
+}
+
+/**
+ * @brief 기본값을 설정하여 새로운 큐 생성
+ * @param value 큐의 기본값으로 설정할 값의 포인터
+ * @param size 생성할 큐의 길이
+ * @param of_size 큐의 기본값으로 설정할 값의 크기
+ * @return 동적으로 생성된 큐의 주소
+ */
+struct queue* queue_create_from_value(void* value, size_t size, size_t of_size)
+{
+    if (value == NULL)
+    {
+        fprintf(stderr, "stderr: Failed to initialize queue since the original array is NULL.\n");
+        abort();
+    }
+    else if (of_size == 0)
+    {
+        fprintf(stderr, "stderr: Size of a single element of queue cannot be zero.");
+        abort();
+    }
+
+    struct queue* ths = (struct queue*)malloc(sizeof(struct queue));
+    ths->arr = malloc(size * of_size);
+    if (ths->arr == NULL)
+    {
+        fprintf(stderr, "stderr: Failed to allocate memory for queue in queue_create_from_array().\n");
+        abort();
+    }
+
+    ths->capacity = size;
+    ths->size = size;
+    ths->of_size = of_size;
+    ths->head = 0;
+    ths->tail = size;
+
+    for (size_t i = 0; i < size; i++)
+        memcpy((char*)ths->arr + i * of_size, value, of_size);
+    __queue_capacity_correction(ths);
+    
     return ths;
 }
 
