@@ -166,7 +166,7 @@ void queue_pop(struct queue* ths)
 {
     if (queue_empty(ths))
     {
-        fprintf(stderr, "stderr: Failed to pop a element from queue because the queue is empty.\n");
+        fprintf(stderr, "stderr: Failed to pop an element from queue because the queue is empty.\n");
         abort();
     }
 

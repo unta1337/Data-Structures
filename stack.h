@@ -231,7 +231,7 @@ void stack_pop(struct stack* ths)
 {
     if (stack_empty(ths))
     {
-        fprintf(stderr, "stderr: Failed to pop a element from stack because the stack is empty.\n");
+        fprintf(stderr, "stderr: Failed to pop an element from stack because the stack is empty.\n");
         abort();
     }
 

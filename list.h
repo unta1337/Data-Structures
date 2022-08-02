@@ -261,7 +261,7 @@ void list_pop(struct list* ths)
 {
     if (list_empty(ths))
     {
-        fprintf(stderr, "stderr: Failed to pop a element from list because the list is empty.\n");
+        fprintf(stderr, "stderr: Failed to pop an element from list because the list is empty.\n");
         abort();
     }
 
