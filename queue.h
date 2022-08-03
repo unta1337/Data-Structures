@@ -257,7 +257,9 @@ void queue_push(struct queue* ths, void* value)
     if (ths->size + 1 == ths->capacity)
         __queue_double(ths);
 
-    memcpy((char*)ths->arr + ths->tail++ * ths->of_size, value, ths->of_size);
+    memcpy((char*)ths->arr + ths->tail * ths->of_size, value, ths->of_size);
+
+    ths->tail++;
     ths->tail %= ths->capacity;
 
     ths->size++;
@@ -275,7 +277,7 @@ void queue_pop(struct queue* ths)
         abort();
     }
 
-    ths->head += ths->capacity + 1;
+    ths->head++;
     ths->head %= ths->capacity;
 
     ths->size--;
@@ -293,11 +295,27 @@ void queue_front(struct queue* ths, void* dest)
 {
     if (queue_empty(ths))
     {
-        fprintf(stderr, "stderr: Failed to read from the top of the queue because the queue is empty.\n");
+        fprintf(stderr, "stderr: Failed to read from the front of the queue because the queue is empty.\n");
         abort();
     }
 
     memcpy(dest, (char*)ths->arr + ths->head * ths->of_size, ths->of_size);
+}
+
+/**
+ * @brief 큐의 마지막 요소를 dest에 복사
+ * @param ths 대상 큐 포인터
+ * @param dest 요소를 복사할 목적지
+ */
+void queue_back(struct queue* ths, void* dest)
+{
+    if (queue_empty(ths))
+    {
+        fprintf(stderr, "stderr: Failed to read from the back of the queue because the queue is empty.\n");
+        abort();
+    }
+
+    memcpy(dest, (char*)ths->arr + (ths->tail + ths->capacity - 1) % ths->capacity * ths->of_size, ths->of_size);
 }
 
 /**
