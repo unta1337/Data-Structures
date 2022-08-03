@@ -7,8 +7,8 @@
 #include <string.h>
 
 // 참고, 아래의 include 경로는 본 리포지토리에 한하므로 실제 백준 제출 시에는 헤더 파일을 직접 삽입했다.
-#include "../../stack.h"
-#include "../../queue.h"
+#include "../stack.h"
+#include "../queue.h"
 
 int main(void)
 {
