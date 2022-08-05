@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <time.h>
 
-#include "../../heap_queue.h"
+#include "../heap_queue.h"
 
 #define NUM_ARR (1 << 8)
 
@@ -35,9 +35,7 @@ int main(void)
         printf("%d ", arr[i]);
     printf("\n");
 
-    struct heap_queue* hq = heap_queue_create(sizeof(int), comp);
-    for (int i = 0; i < NUM_ARR; i++)
-        heap_queue_push(hq, &arr[i]);
+    struct heap_queue* hq = heap_queue_create_from_array(arr, NUM_ARR, sizeof(int), comp);
 
     int index = 0;
     while (hq->size > 0)
