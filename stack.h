@@ -41,7 +41,7 @@ void __stack_double(struct stack* ths)
     ths->arr = realloc_s(ths->arr, ths->capacity * ths->of_size);
     if (ths->arr == NULL)
     {
-        fprintf(stderr, "stderr: Failed to realloc_sate memory for stack in __stack_double().\n");
+        fprintf(stderr, "stderr: Failed to reallocate memory for stack in __stack_double().\n");
         abort();
     }
 }
@@ -61,7 +61,7 @@ void __stack_half(struct stack* ths)
     ths->arr = realloc_s(ths->arr, ths->capacity * ths->of_size);
     if (ths->arr == NULL)
     {
-        fprintf(stderr, "stderr: Failed to realloc_sate memory for stack in __stack_half().\n");
+        fprintf(stderr, "stderr: Failed to reallocate memory for stack in __stack_half().\n");
         abort();
     }
 }
@@ -82,7 +82,7 @@ void __stack_capacity_correction(struct stack* ths)
     ths->arr = realloc_s(ths->arr, correct_capacity * ths->of_size);
     if (ths->arr == NULL)
     {
-        fprintf(stderr, "stderr: Failed to realloc_sate memory for stack in __stack_capacity_correction().\n");
+        fprintf(stderr, "stderr: Failed to reallocate memory for stack in __stack_capacity_correction().\n");
         abort();
     }
 
@@ -266,7 +266,7 @@ void stack_clear(struct stack* ths)
     ths->arr = realloc_s(ths->arr, ths->of_size);
     if (ths->arr == NULL)
     {
-        fprintf(stderr, "stderr: Failed to realloc_sate memory for stack in stack_clear().\n");
+        fprintf(stderr, "stderr: Failed to reallocate memory for stack in stack_clear().\n");
         abort();
     }
 

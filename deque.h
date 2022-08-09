@@ -49,7 +49,7 @@ void __deque_double(struct deque* ths)
     ths->arr = realloc_s(ths->arr, ths->capacity * ths->of_size);
     if (ths->arr == NULL)
     {
-        fprintf(stderr, "stderr: Failed to realloc_sate memory for deque in __deque_double().\n");
+        fprintf(stderr, "stderr: Failed to reallocate memory for deque in __deque_double().\n");
         abort();
     }
 
@@ -89,7 +89,7 @@ void __deque_half(struct deque* ths)
     ths->arr = realloc_s(ths->arr, ths->capacity * ths->of_size);
     if (ths->arr == NULL)
     {
-        fprintf(stderr, "stderr: Failed to realloc_sate memory for deque in __deque_half().\n");
+        fprintf(stderr, "stderr: Failed to reallocate memory for deque in __deque_half().\n");
         abort();
     }
 
@@ -113,7 +113,7 @@ void __deque_capacity_correction(struct deque* ths)
     ths->arr = realloc_s(ths->arr, correct_capacity * ths->of_size);
     if (ths->arr == NULL)
     {
-        fprintf(stderr, "stderr: Failed to realloc_sate memory for deque in __deque_capacity_correction().\n");
+        fprintf(stderr, "stderr: Failed to reallocate memory for deque in __deque_capacity_correction().\n");
         abort();
     }
 
@@ -368,7 +368,7 @@ void deque_clear(struct deque* ths)
     ths->arr = realloc_s(ths->arr, ths->of_size);
     if (ths->arr == NULL)
     {
-        fprintf(stderr, "stderr: Failed to realloc_sate memory for stack in deque_clear().\n");
+        fprintf(stderr, "stderr: Failed to reallocate memory for stack in deque_clear().\n");
         abort();
     }
 

@@ -41,7 +41,7 @@ void __list_double(struct list* ths)
     ths->arr = realloc_s(ths->arr, ths->capacity * ths->of_size);
     if (ths->arr == NULL)
     {
-        fprintf(stderr, "stderr: Failed to realloc_sate memory for list in __list_double().\n");
+        fprintf(stderr, "stderr: Failed to reallocate memory for list in __list_double().\n");
         abort();
     }
 }
@@ -61,7 +61,7 @@ void __list_half(struct list* ths)
     ths->arr = realloc_s(ths->arr, ths->capacity * ths->of_size);
     if (ths->arr == NULL)
     {
-        fprintf(stderr, "stderr: Failed to realloc_sate memory for list in __list_half().\n");
+        fprintf(stderr, "stderr: Failed to reallocate memory for list in __list_half().\n");
         abort();
     }
 }
@@ -82,7 +82,7 @@ void __list_capacity_correction(struct list* ths)
     ths->arr = realloc_s(ths->arr, correct_capacity * ths->of_size);
     if (ths->arr == NULL)
     {
-        fprintf(stderr, "stderr: Failed to realloc_sate memory for stack in __list_capacity_correction().\n");
+        fprintf(stderr, "stderr: Failed to reallocate memory for stack in __list_capacity_correction().\n");
         abort();
     }
 
@@ -365,7 +365,7 @@ void list_clear(struct list* ths)
     ths->arr = realloc_s(ths->arr, ths->of_size);
     if (ths->arr == NULL)
     {
-        fprintf(stderr, "stderr: Failed to realloc_sate memory for list in list_clear().\n");
+        fprintf(stderr, "stderr: Failed to reallocate memory for list in list_clear().\n");
         abort();
     }
 

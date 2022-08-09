@@ -26,6 +26,12 @@ struct hash_map* hash_map_create(size_t of_size_key, size_t of_size_value, size_
     struct hash_map* ths = (struct hash_map*)malloc_s(sizeof(struct hash_map));
 
     ths->arr = (struct list**)malloc_s(21 * sizeof(struct list*));
+    if (ths->arr == NULL)
+    {
+        fprintf(stderr, "stderr: Failed to allocate memory for hash map in hash_map_create()\n");
+        abort();
+    }
+
     for (int i = 0; i < 21; i++)
         ths->arr[i] = list_create(sizeof(struct pair*));
 
@@ -80,13 +86,18 @@ void hash_map_pop(struct hash_map* ths, void* key)
     {
         struct pair* pair = ((struct pair**)ths->arr[index]->arr)[i];
         if (ths->comp(key, pair->first) == 0)
+        {
             list_remove(ths->arr[index], i);
+            ths->size--;
+            return;
+        }
     }
 
-    ths->size--;
+    fprintf(stderr, "stderr: Failed to pop an element from hash map because no such key is exist.\n");
+    abort();
 }
 
-bool hash_map_get(struct hash_map* ths, void* dest, void* key)
+void hash_map_get(struct hash_map* ths, void* dest, void* key)
 {
     size_t index = ths->hash(key) % ths->capacity;
 
@@ -97,11 +108,12 @@ bool hash_map_get(struct hash_map* ths, void* dest, void* key)
         if (ths->comp(key, pair->first) == 0)
         {
             memcpy(dest, pair->second, ths->of_size_value);
-            return true;
+            return;
         }
     }
 
-    return false;
+    fprintf(stderr, "stderr: Failed to read an element from hash map because no such key is exist.\n");
+    abort();
 }
 
 #endif

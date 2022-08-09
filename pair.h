@@ -49,7 +49,7 @@ struct pair* pair_create(size_t of_size_first, size_t of_size_second)
     ths->second = malloc_s(of_size_second);
     if (ths->first == NULL || ths->second == NULL)
     {
-        fprintf(stderr, "stderr: Failed to realloc_sate memory for pair in pair_create().\n");
+        fprintf(stderr, "stderr: Failed to reallocate memory for pair in pair_create().\n");
         abort();
     }
 

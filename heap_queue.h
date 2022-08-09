@@ -46,7 +46,7 @@ void __heap_queue_double(struct heap_queue* ths)
     ths->arr = realloc_s(ths->arr, ths->capacity * ths->of_size);
     if (ths->arr == NULL)
     {
-        fprintf(stderr, "stderr: Failed to realloc_sate memory for heap_queue in __heap_queue_double().\n");
+        fprintf(stderr, "stderr: Failed to reallocate memory for heap_queue in __heap_queue_double().\n");
         abort();
     }
 }
@@ -66,7 +66,7 @@ void __heap_queue_half(struct heap_queue* ths)
     ths->arr = realloc_s(ths->arr, ths->capacity * ths->of_size);
     if (ths->arr == NULL)
     {
-        fprintf(stderr, "stderr: Failed to realloc_sate memory for heap_queue in __heap_queue_half().\n");
+        fprintf(stderr, "stderr: Failed to reallocate memory for heap_queue in __heap_queue_half().\n");
         abort();
     }
 }
@@ -87,7 +87,7 @@ void __heap_queue_capacity_correction(struct heap_queue* ths)
     ths->arr = realloc_s(ths->arr, correct_capacity * ths->of_size);
     if (ths->arr == NULL)
     {
-        fprintf(stderr, "stderr: Failed to realloc_sate memory for stack in __heap_queue_capacity_correction().\n");
+        fprintf(stderr, "stderr: Failed to reallocate memory for stack in __heap_queue_capacity_correction().\n");
         abort();
     }
 
@@ -393,7 +393,7 @@ void heap_queue_clear(struct heap_queue* ths)
     ths->arr = realloc_s(ths->arr, ths->of_size);
     if (ths->arr == NULL)
     {
-        fprintf(stderr, "stderr: Failed to realloc_sate memory for stack in heap_queue_clear().\n");
+        fprintf(stderr, "stderr: Failed to reallocate memory for stack in heap_queue_clear().\n");
         abort();
     }
 

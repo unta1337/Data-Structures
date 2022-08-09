@@ -49,7 +49,7 @@ void __queue_double(struct queue* ths)
     ths->arr = realloc_s(ths->arr, ths->capacity * ths->of_size);
     if (ths->arr == NULL)
     {
-        fprintf(stderr, "stderr: Failed to realloc_sate memory for queue in __queue_double().\n");
+        fprintf(stderr, "stderr: Failed to reallocate memory for queue in __queue_double().\n");
         abort();
     }
 
@@ -89,7 +89,7 @@ void __queue_half(struct queue* ths)
     ths->arr = realloc_s(ths->arr, ths->capacity * ths->of_size);
     if (ths->arr == NULL)
     {
-        fprintf(stderr, "stderr: Failed to realloc_sate memory for queue in __queue_half().\n");
+        fprintf(stderr, "stderr: Failed to reallocate memory for queue in __queue_half().\n");
         abort();
     }
 
@@ -113,7 +113,7 @@ void __queue_capacity_correction(struct queue* ths)
     ths->arr = realloc_s(ths->arr, correct_capacity * ths->of_size);
     if (ths->arr == NULL)
     {
-        fprintf(stderr, "stderr: Failed to realloc_sate memory for queue in __queue_capacity_correction().\n");
+        fprintf(stderr, "stderr: Failed to reallocate memory for queue in __queue_capacity_correction().\n");
         abort();
     }
 
@@ -327,7 +327,7 @@ void queue_clear(struct queue* ths)
     ths->arr = realloc_s(ths->arr, ths->of_size);
     if (ths->arr == NULL)
     {
-        fprintf(stderr, "stderr: Failed to realloc_sate memory for stack in queue_clear().\n");
+        fprintf(stderr, "stderr: Failed to reallocate memory for stack in queue_clear().\n");
         abort();
     }
 
