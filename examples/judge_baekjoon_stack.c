@@ -60,5 +60,9 @@ int main(void)
         }
     }
 
+    stack_delete(stk);
+
+    printf("\nCurrent Memory Usage (should be 0): %zu.\n", used_malloc);
+
     return 0;
 }

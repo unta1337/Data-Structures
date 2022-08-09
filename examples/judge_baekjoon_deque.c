@@ -96,5 +96,7 @@ int main(void)
 
     deque_delete(deq);
 
+    printf("\nCurrent Memory Usage (should be 0): %zu.\n", used_malloc);
+
     return 0;
 }

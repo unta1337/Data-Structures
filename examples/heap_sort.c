@@ -53,5 +53,7 @@ int main(void)
 
     heap_queue_delete(hq);
 
+    printf("\nCurrent Memory Usage (should be 0): %zu.\n", used_malloc);
+
     return 0;
 }

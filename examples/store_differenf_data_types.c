@@ -58,5 +58,7 @@ int main(void)
     free_s(temp);
     list_delete(lst);
 
+    printf("\nCurrent Memory Usage (should be 0): %zu.\n", used_malloc);
+
     return 0;
 }

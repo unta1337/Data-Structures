@@ -83,6 +83,8 @@ int dijkstra(int start)
     }
     printf("\n");
 
+    heap_queue_delete(hq);
+
     return 0;
 }
 
@@ -90,6 +92,8 @@ int main(void)
 {
     for (int i = 0; i < NUM_V; i++)
         dijkstra(i);
+
+    printf("\nCurrent Memory Usage (should be 0): %zu.\n", used_malloc);
 
     return 0;
 }
