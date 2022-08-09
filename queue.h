@@ -2,9 +2,9 @@
 #define __QUEUE_H
 
 #include <stdio.h>
-#include <stdlib.h>
 #include <stdbool.h>
-#include <string.h>
+
+#include "utils/memory.h"
 
 /**
  * 배열을 기반으로 구현된 가변 크기 큐
@@ -46,10 +46,10 @@ struct queue
 void __queue_double(struct queue* ths)
 {
     ths->capacity *= 2;
-    ths->arr = realloc(ths->arr, ths->capacity * ths->of_size);
+    ths->arr = realloc_s(ths->arr, ths->capacity * ths->of_size);
     if (ths->arr == NULL)
     {
-        fprintf(stderr, "stderr: Failed to reallocate memory for queue in __queue_double().\n");
+        fprintf(stderr, "stderr: Failed to realloc_sate memory for queue in __queue_double().\n");
         abort();
     }
 
@@ -86,10 +86,10 @@ void __queue_half(struct queue* ths)
     }
 
     ths->capacity /= 2;
-    ths->arr = realloc(ths->arr, ths->capacity * ths->of_size);
+    ths->arr = realloc_s(ths->arr, ths->capacity * ths->of_size);
     if (ths->arr == NULL)
     {
-        fprintf(stderr, "stderr: Failed to reallocate memory for queue in __queue_half().\n");
+        fprintf(stderr, "stderr: Failed to realloc_sate memory for queue in __queue_half().\n");
         abort();
     }
 
@@ -110,10 +110,10 @@ void __queue_capacity_correction(struct queue* ths)
     while (correct_capacity <= ths->size + 1)
         correct_capacity *= 2;
 
-    ths->arr = realloc(ths->arr, correct_capacity * ths->of_size);
+    ths->arr = realloc_s(ths->arr, correct_capacity * ths->of_size);
     if (ths->arr == NULL)
     {
-        fprintf(stderr, "stderr: Failed to reallocate memory for queue in __queue_capacity_correction().\n");
+        fprintf(stderr, "stderr: Failed to realloc_sate memory for queue in __queue_capacity_correction().\n");
         abort();
     }
 
@@ -127,9 +127,9 @@ void __queue_capacity_correction(struct queue* ths)
  */
 struct queue* queue_create(size_t of_size)
 {
-    struct queue* ths = (struct queue*)malloc(sizeof(struct queue));
+    struct queue* ths = (struct queue*)malloc_s(sizeof(struct queue));
 
-    ths->arr = malloc(of_size);
+    ths->arr = malloc_s(of_size);
     if (ths->arr == NULL)
     {
         fprintf(stderr, "stderr: Failed to allocate memory for queue in queue_create().\n");
@@ -165,9 +165,9 @@ struct queue* queue_create_from_array(void* arr, size_t size, size_t of_size)
         abort();
     }
 
-    struct queue* ths = (struct queue*)malloc(sizeof(struct queue));
+    struct queue* ths = (struct queue*)malloc_s(sizeof(struct queue));
 
-    ths->arr = malloc(size * of_size);
+    ths->arr = malloc_s(size * of_size);
     if (ths->arr == NULL)
     {
         fprintf(stderr, "stderr: Failed to allocate memory for queue in queue_create_from_array().\n");
@@ -206,8 +206,8 @@ struct queue* queue_create_from_value(void* value, size_t size, size_t of_size)
         abort();
     }
 
-    struct queue* ths = (struct queue*)malloc(sizeof(struct queue));
-    ths->arr = malloc(size * of_size);
+    struct queue* ths = (struct queue*)malloc_s(sizeof(struct queue));
+    ths->arr = malloc_s(size * of_size);
     if (ths->arr == NULL)
     {
         fprintf(stderr, "stderr: Failed to allocate memory for queue in queue_create_from_array().\n");
@@ -233,8 +233,8 @@ struct queue* queue_create_from_value(void* value, size_t size, size_t of_size)
  */
 void queue_delete(struct queue* ths)
 {
-    free(ths->arr);
-    free(ths);
+    free_s(ths->arr);
+    free_s(ths);
 }
 
 /**
@@ -324,10 +324,10 @@ void queue_back(struct queue* ths, void* dest)
  */
 void queue_clear(struct queue* ths)
 {
-    ths->arr = realloc(ths->arr, ths->of_size);
+    ths->arr = realloc_s(ths->arr, ths->of_size);
     if (ths->arr == NULL)
     {
-        fprintf(stderr, "stderr: Failed to reallocate memory for stack in queue_clear().\n");
+        fprintf(stderr, "stderr: Failed to realloc_sate memory for stack in queue_clear().\n");
         abort();
     }
 

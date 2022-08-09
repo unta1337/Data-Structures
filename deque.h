@@ -2,9 +2,9 @@
 #define __DEQUE_H
 
 #include <stdio.h>
-#include <stdlib.h>
 #include <stdbool.h>
-#include <string.h>
+
+#include "utils/memory.h"
 
 /**
  * 배열을 기반으로 구현된 가변 크기 덱
@@ -46,10 +46,10 @@ struct deque
 void __deque_double(struct deque* ths)
 {
     ths->capacity *= 2;
-    ths->arr = realloc(ths->arr, ths->capacity * ths->of_size);
+    ths->arr = realloc_s(ths->arr, ths->capacity * ths->of_size);
     if (ths->arr == NULL)
     {
-        fprintf(stderr, "stderr: Failed to reallocate memory for deque in __deque_double().\n");
+        fprintf(stderr, "stderr: Failed to realloc_sate memory for deque in __deque_double().\n");
         abort();
     }
 
@@ -86,10 +86,10 @@ void __deque_half(struct deque* ths)
     }
 
     ths->capacity /= 2;
-    ths->arr = realloc(ths->arr, ths->capacity * ths->of_size);
+    ths->arr = realloc_s(ths->arr, ths->capacity * ths->of_size);
     if (ths->arr == NULL)
     {
-        fprintf(stderr, "stderr: Failed to reallocate memory for deque in __deque_half().\n");
+        fprintf(stderr, "stderr: Failed to realloc_sate memory for deque in __deque_half().\n");
         abort();
     }
 
@@ -110,10 +110,10 @@ void __deque_capacity_correction(struct deque* ths)
     while (correct_capacity <= ths->size + 1)
         correct_capacity *= 2;
 
-    ths->arr = realloc(ths->arr, correct_capacity * ths->of_size);
+    ths->arr = realloc_s(ths->arr, correct_capacity * ths->of_size);
     if (ths->arr == NULL)
     {
-        fprintf(stderr, "stderr: Failed to reallocate memory for deque in __deque_capacity_correction().\n");
+        fprintf(stderr, "stderr: Failed to realloc_sate memory for deque in __deque_capacity_correction().\n");
         abort();
     }
 
@@ -127,9 +127,9 @@ void __deque_capacity_correction(struct deque* ths)
  */
 struct deque* deque_create(size_t of_size)
 {
-    struct deque* ths = (struct deque*)malloc(sizeof(struct deque));
+    struct deque* ths = (struct deque*)malloc_s(sizeof(struct deque));
 
-    ths->arr = malloc(of_size);
+    ths->arr = malloc_s(of_size);
     if (ths->arr == NULL)
     {
         fprintf(stderr, "stderr: Failed to allocate memory for deque in deque_create().\n");
@@ -165,9 +165,9 @@ struct deque* deque_create_from_array(void* arr, size_t size, size_t of_size)
         abort();
     }
 
-    struct deque* ths = (struct deque*)malloc(sizeof(struct deque));
+    struct deque* ths = (struct deque*)malloc_s(sizeof(struct deque));
 
-    ths->arr = malloc(size * of_size);
+    ths->arr = malloc_s(size * of_size);
     if (ths->arr == NULL)
     {
         fprintf(stderr, "stderr: Failed to allocate memory for deque in deque_create_from_array().\n");
@@ -206,8 +206,8 @@ struct deque* deque_create_from_value(void* value, size_t size, size_t of_size)
         abort();
     }
 
-    struct deque* ths = (struct deque*)malloc(sizeof(struct deque));
-    ths->arr = malloc(size * of_size);
+    struct deque* ths = (struct deque*)malloc_s(sizeof(struct deque));
+    ths->arr = malloc_s(size * of_size);
     if (ths->arr == NULL)
     {
         fprintf(stderr, "stderr: Failed to allocate memory for deque in deque_create_from_array().\n");
@@ -233,8 +233,8 @@ struct deque* deque_create_from_value(void* value, size_t size, size_t of_size)
  */
 void deque_delete(struct deque* ths)
 {
-    free(ths->arr);
-    free(ths);
+    free_s(ths->arr);
+    free_s(ths);
 }
 
 /**
@@ -365,10 +365,10 @@ void deque_back(struct deque* ths, void* dest)
  */
 void deque_clear(struct deque* ths)
 {
-    ths->arr = realloc(ths->arr, ths->of_size);
+    ths->arr = realloc_s(ths->arr, ths->of_size);
     if (ths->arr == NULL)
     {
-        fprintf(stderr, "stderr: Failed to reallocate memory for stack in deque_clear().\n");
+        fprintf(stderr, "stderr: Failed to realloc_sate memory for stack in deque_clear().\n");
         abort();
     }
 

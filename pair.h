@@ -2,8 +2,8 @@
 #define __PAIR_H
 
 #include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+
+#include "utils/memory.h"
 
 struct pair
 {
@@ -22,13 +22,13 @@ struct pair* pair_create(size_t of_size_first, size_t of_size_second)
         abort();
     }
 
-    struct pair* ths = (struct pair*)malloc(sizeof(struct pair));
+    struct pair* ths = (struct pair*)malloc_s(sizeof(struct pair));
 
-    ths->first = malloc(of_size_first);
-    ths->second = malloc(of_size_second);
+    ths->first = malloc_s(of_size_first);
+    ths->second = malloc_s(of_size_second);
     if (ths->first == NULL || ths->second == NULL)
     {
-        fprintf(stderr, "stderr: Failed to reallocate memory for pair in pair_create().\n");
+        fprintf(stderr, "stderr: Failed to realloc_sate memory for pair in pair_create().\n");
         abort();
     }
 
@@ -56,9 +56,9 @@ struct pair* pair_make(void* first, size_t of_size_first, void* second, size_t o
 
 void pair_delete(struct pair* ths)
 {
-    free(ths->first);
-    free(ths->second);
-    free(ths);
+    free_s(ths->first);
+    free_s(ths->second);
+    free_s(ths);
 }
 
 void pair_get_first(struct pair* ths, void* dest)
