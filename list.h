@@ -6,6 +6,8 @@
 #include <stdbool.h>
 #include <string.h>
 
+#include "utils/memory.h"
+
 /**
  * 배열을 기반으로 구현된 가변 길이 리스트
  */
@@ -38,10 +40,10 @@ struct list
 void __list_double(struct list* ths)
 {
     ths->capacity *= 2;
-    ths->arr = realloc(ths->arr, ths->capacity * ths->of_size);
+    ths->arr = realloc_s(ths->arr, ths->capacity * ths->of_size);
     if (ths->arr == NULL)
     {
-        fprintf(stderr, "stderr: Failed to reallocate memory for list in __list_double().\n");
+        fprintf(stderr, "stderr: Failed to realloc_sate memory for list in __list_double().\n");
         abort();
     }
 }
@@ -58,10 +60,10 @@ void __list_half(struct list* ths)
         return;
 
     ths->capacity /= 2;
-    ths->arr = realloc(ths->arr, ths->capacity * ths->of_size);
+    ths->arr = realloc_s(ths->arr, ths->capacity * ths->of_size);
     if (ths->arr == NULL)
     {
-        fprintf(stderr, "stderr: Failed to reallocate memory for list in __list_half().\n");
+        fprintf(stderr, "stderr: Failed to realloc_sate memory for list in __list_half().\n");
         abort();
     }
 }
@@ -79,10 +81,10 @@ void __list_capacity_correction(struct list* ths)
     while (correct_capacity <= ths->size)
         correct_capacity *= 2;
 
-    ths->arr = realloc(ths->arr, correct_capacity * ths->of_size);
+    ths->arr = realloc_s(ths->arr, correct_capacity * ths->of_size);
     if (ths->arr == NULL)
     {
-        fprintf(stderr, "stderr: Failed to reallocate memory for stack in __list_capacity_correction().\n");
+        fprintf(stderr, "stderr: Failed to realloc_sate memory for stack in __list_capacity_correction().\n");
         abort();
     }
 
@@ -96,9 +98,9 @@ void __list_capacity_correction(struct list* ths)
  */
 struct list* list_create(size_t of_size)
 {
-    struct list* ths = (struct list*)malloc(sizeof(struct list));
+    struct list* ths = (struct list*)malloc_s(sizeof(struct list));
 
-    ths->arr = malloc(of_size);
+    ths->arr = malloc_s(of_size);
     if (ths->arr == NULL)
     {
         fprintf(stderr, "stderr: Failed to allocate memory for list in list_create().\n");
@@ -132,9 +134,9 @@ struct list* list_create_from_array(void* arr, size_t size, size_t of_size)
         abort();
     }
 
-    struct list* ths = (struct list*)malloc(sizeof(struct list));
+    struct list* ths = (struct list*)malloc_s(sizeof(struct list));
 
-    ths->arr = malloc(size * of_size);
+    ths->arr = malloc_s(size * of_size);
     if (ths->arr == NULL)
     {
         fprintf(stderr, "stderr: Failed to allocate memory for list in list_create_from_array().\n");
@@ -171,8 +173,8 @@ struct list* list_create_from_value(void* value, size_t size, size_t of_size)
         abort();
     }
 
-    struct list* ths = (struct list*)malloc(sizeof(struct list));
-    ths->arr = malloc(size * of_size);
+    struct list* ths = (struct list*)malloc_s(sizeof(struct list));
+    ths->arr = malloc_s(size * of_size);
     if (ths->arr == NULL)
     {
         fprintf(stderr, "stderr: Failed to allocate memory for list in list_create_from_array().\n");
@@ -196,8 +198,8 @@ struct list* list_create_from_value(void* value, size_t size, size_t of_size)
  */
 void list_delete(struct list* ths)
 {
-    free(ths->arr);
-    free(ths);
+    free_s(ths->arr);
+    free_s(ths);
 }
 
 /**
@@ -280,7 +282,7 @@ void list_pop(struct list* ths)
  *    list_pop(lst, temp);
  *
  *    또는,
- *    int* temp_v = malloc(2 * sizeof(int));
+ *    int* temp_v = malloc_s(2 * sizeof(int));
  *    list_pop(lst, temp_v);
  *
  * @brief 리스트의 특정 요소를 dest에 복사
@@ -331,9 +333,9 @@ void list_insert(struct list* ths, size_t index, void* value)
         abort();
     }
 
-    void* temp = malloc(ths->of_size);
+    void* temp = malloc_s(ths->of_size);
     list_push(ths, temp);
-    free(temp);
+    free_s(temp);
 
     memmove((char*)ths->arr + (index + 1) * ths->of_size, (char*)ths->arr + index * ths->of_size, (ths->size - index - 1) * ths->of_size);
     memcpy((char*)ths->arr + index * ths->of_size, value, ths->of_size);
@@ -362,10 +364,10 @@ void list_remove(struct list* ths, size_t index)
  */
 void list_clear(struct list* ths)
 {
-    ths->arr = realloc(ths->arr, ths->of_size);
+    ths->arr = realloc_s(ths->arr, ths->of_size);
     if (ths->arr == NULL)
     {
-        fprintf(stderr, "stderr: Failed to reallocate memory for list in list_clear().\n");
+        fprintf(stderr, "stderr: Failed to realloc_sate memory for list in list_clear().\n");
         abort();
     }
 

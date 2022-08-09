@@ -6,6 +6,8 @@
 #include <stdbool.h>
 #include <string.h>
 
+#include "utils/memory.h"
+
 /**
  * 배열을 기반으로 구현된 가변 크기 스택
  */
@@ -38,10 +40,10 @@ struct stack
 void __stack_double(struct stack* ths)
 {
     ths->capacity *= 2;
-    ths->arr = realloc(ths->arr, ths->capacity * ths->of_size);
+    ths->arr = realloc_s(ths->arr, ths->capacity * ths->of_size);
     if (ths->arr == NULL)
     {
-        fprintf(stderr, "stderr: Failed to reallocate memory for stack in __stack_double().\n");
+        fprintf(stderr, "stderr: Failed to realloc_sate memory for stack in __stack_double().\n");
         abort();
     }
 }
@@ -58,10 +60,10 @@ void __stack_half(struct stack* ths)
         return;
 
     ths->capacity /= 2;
-    ths->arr = realloc(ths->arr, ths->capacity * ths->of_size);
+    ths->arr = realloc_s(ths->arr, ths->capacity * ths->of_size);
     if (ths->arr == NULL)
     {
-        fprintf(stderr, "stderr: Failed to reallocate memory for stack in __stack_half().\n");
+        fprintf(stderr, "stderr: Failed to realloc_sate memory for stack in __stack_half().\n");
         abort();
     }
 }
@@ -79,10 +81,10 @@ void __stack_capacity_correction(struct stack* ths)
     while (correct_capacity <= ths->size)
         correct_capacity *= 2;
 
-    ths->arr = realloc(ths->arr, correct_capacity * ths->of_size);
+    ths->arr = realloc_s(ths->arr, correct_capacity * ths->of_size);
     if (ths->arr == NULL)
     {
-        fprintf(stderr, "stderr: Failed to reallocate memory for stack in __stack_capacity_correction().\n");
+        fprintf(stderr, "stderr: Failed to realloc_sate memory for stack in __stack_capacity_correction().\n");
         abort();
     }
 
@@ -96,9 +98,9 @@ void __stack_capacity_correction(struct stack* ths)
  */
 struct stack* stack_create(size_t of_size)
 {
-    struct stack* ths = (struct stack*)malloc(sizeof(struct stack));
+    struct stack* ths = (struct stack*)malloc_s(sizeof(struct stack));
 
-    ths->arr = malloc(of_size);
+    ths->arr = malloc_s(of_size);
     if (ths->arr == NULL)
     {
         fprintf(stderr, "stderr: Failed to allocate memory for stack in stack_create().\n");
@@ -132,9 +134,9 @@ struct stack* stack_create_from_array(void* arr, size_t size, size_t of_size)
         abort();
     }
 
-    struct stack* ths = (struct stack*)malloc(sizeof(struct stack));
+    struct stack* ths = (struct stack*)malloc_s(sizeof(struct stack));
 
-    ths->arr = malloc(size * of_size);
+    ths->arr = malloc_s(size * of_size);
     if (ths->arr == NULL)
     {
         fprintf(stderr, "stderr: Failed to allocate memory for stack in stack_create_from_array().\n");
@@ -171,8 +173,8 @@ struct stack* stack_create_from_value(void* value, size_t size, size_t of_size)
         abort();
     }
 
-    struct stack* ths = (struct stack*)malloc(sizeof(struct stack));
-    ths->arr = malloc(size * of_size);
+    struct stack* ths = (struct stack*)malloc_s(sizeof(struct stack));
+    ths->arr = malloc_s(size * of_size);
     if (ths->arr == NULL)
     {
         fprintf(stderr, "stderr: Failed to allocate memory for stack in stack_create_from_array().\n");
@@ -196,8 +198,8 @@ struct stack* stack_create_from_value(void* value, size_t size, size_t of_size)
  */
 void stack_delete(struct stack* ths)
 {
-    free(ths->arr);
-    free(ths);
+    free_s(ths->arr);
+    free_s(ths);
 }
 
 /**
@@ -263,10 +265,10 @@ void stack_top(struct stack* ths, void* dest)
  */
 void stack_clear(struct stack* ths)
 {
-    ths->arr = realloc(ths->arr, ths->of_size);
+    ths->arr = realloc_s(ths->arr, ths->of_size);
     if (ths->arr == NULL)
     {
-        fprintf(stderr, "stderr: Failed to reallocate memory for stack in stack_clear().\n");
+        fprintf(stderr, "stderr: Failed to realloc_sate memory for stack in stack_clear().\n");
         abort();
     }
 

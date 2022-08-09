@@ -6,6 +6,8 @@
 #include <stdbool.h>
 #include <string.h>
 
+#include "utils/memory.h"
+
 /**
  * 배열을 기반으로 구현된 가변 크기 힙큐
  */
@@ -43,10 +45,10 @@ struct heap_queue
 void __heap_queue_double(struct heap_queue* ths)
 {
     ths->capacity *= 2;
-    ths->arr = realloc(ths->arr, ths->capacity * ths->of_size);
+    ths->arr = realloc_s(ths->arr, ths->capacity * ths->of_size);
     if (ths->arr == NULL)
     {
-        fprintf(stderr, "stderr: Failed to reallocate memory for heap_queue in __heap_queue_double().\n");
+        fprintf(stderr, "stderr: Failed to realloc_sate memory for heap_queue in __heap_queue_double().\n");
         abort();
     }
 }
@@ -63,10 +65,10 @@ void __heap_queue_half(struct heap_queue* ths)
         return;
 
     ths->capacity /= 2;
-    ths->arr = realloc(ths->arr, ths->capacity * ths->of_size);
+    ths->arr = realloc_s(ths->arr, ths->capacity * ths->of_size);
     if (ths->arr == NULL)
     {
-        fprintf(stderr, "stderr: Failed to reallocate memory for heap_queue in __heap_queue_half().\n");
+        fprintf(stderr, "stderr: Failed to realloc_sate memory for heap_queue in __heap_queue_half().\n");
         abort();
     }
 }
@@ -84,10 +86,10 @@ void __heap_queue_capacity_correction(struct heap_queue* ths)
     while (correct_capacity <= ths->size)
         correct_capacity *= 2;
 
-    ths->arr = realloc(ths->arr, correct_capacity * ths->of_size);
+    ths->arr = realloc_s(ths->arr, correct_capacity * ths->of_size);
     if (ths->arr == NULL)
     {
-        fprintf(stderr, "stderr: Failed to reallocate memory for stack in __heap_queue_capacity_correction().\n");
+        fprintf(stderr, "stderr: Failed to realloc_sate memory for stack in __heap_queue_capacity_correction().\n");
         abort();
     }
 
@@ -137,11 +139,11 @@ void __heap_queue_reheap_up(struct heap_queue* ths, size_t index)
         if (ths->comp((char*)ths->arr + node * ths->of_size, (char*)ths->arr + parent * ths->of_size) != -1)
             break;
 
-        void* temp = malloc(ths->of_size);
+        void* temp = malloc_s(ths->of_size);
         memcpy(temp, (char*)ths->arr + node * ths->of_size, ths->of_size);
         memcpy((char*)ths->arr + node * ths->of_size, (char*)ths->arr + parent * ths->of_size, ths->of_size);
         memcpy((char*)ths->arr + parent * ths->of_size, temp, ths->of_size);
-        free(temp);
+        free_s(temp);
 
         node = parent;
         parent = __heap_queue_get_parent(node);
@@ -171,11 +173,11 @@ void __heap_queue_reheap_down(struct heap_queue* ths, size_t index)
         if (ths->comp((char*)ths->arr + higher_priority * ths->of_size, (char*)ths->arr + node * ths->of_size) != -1)
             break;
 
-        void* temp = malloc(ths->of_size);
+        void* temp = malloc_s(ths->of_size);
         memcpy(temp, (char*)ths->arr + higher_priority * ths->of_size, ths->of_size);
         memcpy((char*)ths->arr + higher_priority * ths->of_size, (char*)ths->arr + node * ths->of_size, ths->of_size);
         memcpy((char*)ths->arr + node * ths->of_size, temp, ths->of_size);
-        free(temp);
+        free_s(temp);
 
         node = higher_priority;
         child = __heap_queue_get_left_child(node);
@@ -213,9 +215,9 @@ void __heap_queue_heapify(struct heap_queue* ths)
  */
 struct heap_queue* heap_queue_create(size_t of_size, int (*comp)(const void* p, const void* q))
 {
-    struct heap_queue* ths = (struct heap_queue*)malloc(sizeof(struct heap_queue));
+    struct heap_queue* ths = (struct heap_queue*)malloc_s(sizeof(struct heap_queue));
 
-    ths->arr = malloc(of_size);
+    ths->arr = malloc_s(of_size);
     if (ths->arr == NULL)
     {
         fprintf(stderr, "stderr: Failed to allocate memory for heap queue in heap_queue_create()\n");
@@ -250,9 +252,9 @@ struct heap_queue* heap_queue_create_from_array(void* arr, size_t size, size_t o
         abort();
     }
 
-    struct heap_queue* ths = (struct heap_queue*)malloc(sizeof(struct heap_queue));
+    struct heap_queue* ths = (struct heap_queue*)malloc_s(sizeof(struct heap_queue));
 
-    ths->arr = malloc(size * of_size);
+    ths->arr = malloc_s(size * of_size);
     if (ths->arr == NULL)
     {
         fprintf(stderr, "stderr: Failed to allocate memory for heap_queue in heap_queue_create_from_array().\n");
@@ -291,8 +293,8 @@ struct heap_queue* heap_queue_create_from_value(void* value, size_t size, size_t
         abort();
     }
 
-    struct heap_queue* ths = (struct heap_queue*)malloc(sizeof(struct heap_queue));
-    ths->arr = malloc(size * of_size);
+    struct heap_queue* ths = (struct heap_queue*)malloc_s(sizeof(struct heap_queue));
+    ths->arr = malloc_s(size * of_size);
     if (ths->arr == NULL)
     {
         fprintf(stderr, "stderr: Failed to allocate memory for heap_queue in heap_queue_create_from_array().\n");
@@ -317,8 +319,8 @@ struct heap_queue* heap_queue_create_from_value(void* value, size_t size, size_t
  */
 void heap_queue_delete(struct heap_queue* ths)
 {
-    free(ths->arr);
-    free(ths);
+    free_s(ths->arr);
+    free_s(ths);
 }
 
 /**
@@ -390,10 +392,10 @@ void heap_queue_front(struct heap_queue* ths, void* dest)
  */
 void heap_queue_clear(struct heap_queue* ths)
 {
-    ths->arr = realloc(ths->arr, ths->of_size);
+    ths->arr = realloc_s(ths->arr, ths->of_size);
     if (ths->arr == NULL)
     {
-        fprintf(stderr, "stderr: Failed to reallocate memory for stack in heap_queue_clear().\n");
+        fprintf(stderr, "stderr: Failed to realloc_sate memory for stack in heap_queue_clear().\n");
         abort();
     }
 

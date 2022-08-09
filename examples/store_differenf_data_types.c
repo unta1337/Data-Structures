@@ -38,7 +38,7 @@ int main(void)
     // 리스트로부터 값을 읽기 위해 temp에 공간을 할당.
     // 참고, 삽입과 비슷하게 요소를 읽기 위해서 참조 시 단일 크기만큼의 공간을 가리키는 포인터를 넘지면 된다.
     //       이 경우 temp 역참조 시 sizeof(void*)만큼의 공간이 나타나므로 temp를 그대로 넘겨줬다.
-    temp = malloc(sizeof(void*));
+    temp = malloc_s(sizeof(void*));
 
     // 각 자료형에 맞는 자료형으로 캐스팅 및 역참조햐여 출력.
     list_get(lst, temp, 0);
@@ -55,7 +55,7 @@ int main(void)
     printf("%s\n", *(char**)temp);
 
     // 동적할당된 공간 반납.
-    free(temp);
+    free_s(temp);
     list_delete(lst);
 
     return 0;
