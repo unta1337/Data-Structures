@@ -9,16 +9,6 @@
 #include "list.h"
 #include "pair.h"
 
-size_t hash_size_t(size_t x)
-{
-    size_t P = 4210098769L;
-    size_t a = 42283;
-    size_t b = 44267;
-    size_t value = (a * x + b) % P;
-
-    return value;
-}
-
 struct hash_map
 {
     struct list** arr;
