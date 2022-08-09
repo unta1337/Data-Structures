@@ -73,6 +73,8 @@ void* realloc_s(void* ptr, size_t size)
     if (buffer == NULL)
         return NULL;
 
+    size_box = (size_t*)buffer;
+
     used_malloc += size;
     *size_box = size;
 

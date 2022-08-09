@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <limits.h>
 
-#include "../Data-Structures/heap_queue.h"
+#include "../heap_queue.h"
 
 #define INF INT_MAX / 4
 
