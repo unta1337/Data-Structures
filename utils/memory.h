@@ -31,7 +31,7 @@ void* malloc_s(size_t size)
     size_t* size_box = (size_t*)buffer;
     *size_box = size;
 
-    return buffer + sizeof(size_t);
+    return (char*)buffer + sizeof(size_t);
 }
 
 /**
@@ -53,7 +53,7 @@ void* calloc_s(size_t n, size_t of_size)
     size_t* size_box = (size_t*)buffer;
     *size_box = n * of_size;
 
-    return buffer + sizeof(size_t);
+    return (char*)buffer + sizeof(size_t);
 }
 
 /**
@@ -64,7 +64,7 @@ void* calloc_s(size_t n, size_t of_size)
  */
 void* realloc_s(void* ptr, size_t size)
 {
-    void* buffer = ptr - sizeof(size_t);
+    void* buffer = (char*)ptr - sizeof(size_t);
     size_t* size_box = (size_t*)buffer;
 
     used_malloc -= *size_box;
@@ -78,7 +78,7 @@ void* realloc_s(void* ptr, size_t size)
     used_malloc += size;
     *size_box = size;
 
-    return buffer + sizeof(size_t);
+    return (char*)buffer + sizeof(size_t);
 }
 
 /**
@@ -90,7 +90,7 @@ void free_s(void* ptr)
     if (ptr == NULL)
         return;
 
-    void* buffer = ptr - sizeof(size_t);
+    void* buffer = (char*)ptr - sizeof(size_t);
     size_t* size_box = (size_t*)buffer;
 
     used_malloc -= *size_box;
