@@ -131,6 +131,12 @@ void hash_map_get(struct hash_map* ths, void* dest, void* key);
  */
 void hash_map_set(struct hash_map* ths, void* key, void* value);
 
+/**
+ * @brief 해시맵 초기화
+ * @param ths 대상 해시맵 포인터
+ */
+void hash_map_clear(struct hash_map* ths);
+
 void __hash_map_double(struct hash_map* ths)
 {
     struct list** delete_arr = ths->arr;
@@ -315,6 +321,19 @@ void hash_map_set(struct hash_map* ths, void* key, void* value)
 
     fprintf(stderr, "stderr: Failed to set an element in hash map because key is invalid.\n");
     abort();
+}
+
+void hash_map_clear(struct hash_map* ths)
+{
+    for (size_t i = 0; i < ths->capacity; i++)
+    {
+        size_t iter = ths->arr[i]->size;
+        for (size_t j = 0; j < iter; j++)
+        {
+            struct pair* pair = ((struct pair**)ths->arr[i]->arr)[j];
+            hash_map_pop(ths, pair->first);
+        }
+    }
 }
 
 #endif
