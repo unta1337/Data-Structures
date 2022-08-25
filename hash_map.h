@@ -1,11 +1,6 @@
 #ifndef __HASH_MAP_H
 #define __HASH_MAP_H
 
-#include <stdio.h>
-#include <stdbool.h>
-
-#include "utils/memory.h"
-
 #include "list.h"
 #include "pair.h"
 

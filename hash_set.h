@@ -1,10 +1,6 @@
 #ifndef __HASH_SET_H
 #define __HASH_SET_H
 
-#include <stdbool.h>
-
-#include "utils/memory.h"
-
 #include "hash_map.h"
 
 bool __true = true;
