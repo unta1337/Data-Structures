@@ -74,7 +74,7 @@ void __hash_map_half(struct hash_map* ths);
  * @param of_size_value 값으로 사용할 자료형의 크기
  * @param hash 키의 해싱에 사용되는 해시 함수
  * @param comp 키의 비교에 사용되는 해시 함수
- * @return
+ * @return 동적으로 생성된 해시맵 포인터
  */
 struct hash_map* hash_map_create(size_t of_size_key, size_t of_size_value, size_t (*hash)(const void *p), int (*comp)(const void* p, const void* q));
 
