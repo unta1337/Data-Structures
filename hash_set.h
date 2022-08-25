@@ -105,7 +105,7 @@ void __hash_set_update_variables(struct hash_set* ths)
 
 struct hash_set* hash_set_create(size_t of_size, size_t (*hash)(const void *p), int (*comp)(const void* p, const void* q))
 {
-    struct hash_set* ths = (struct hash_set*)malloc(sizeof(struct hash_set));
+    struct hash_set* ths = (struct hash_set*)malloc_s(sizeof(struct hash_set));
 
     ths->map = hash_map_create(of_size, sizeof(bool), hash, comp);
 
@@ -117,7 +117,7 @@ struct hash_set* hash_set_create(size_t of_size, size_t (*hash)(const void *p), 
 void hash_set_delete(struct hash_set* ths)
 {
     hash_map_delete(ths->map);
-    free(ths);
+    free_s(ths);
 }
 
 void hash_set_push(struct hash_set* ths, void* elem)
