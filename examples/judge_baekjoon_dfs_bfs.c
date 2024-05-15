@@ -8,8 +8,8 @@
 
 // 참고, 아래의 include 경로는 본 리포지토리에 한하므로 실제 백준 제출 시에는 헤더 파일을 직접 삽입했다.
 #define UNDS_TRACK_MEM
-#include "../unds_stack.h"
-#include "../unds_queue.h"
+#define UNDS_IMPLEMENTATION
+#include "../unds.h"
 
 int main(void)
 {

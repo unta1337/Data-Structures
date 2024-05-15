@@ -2,7 +2,8 @@
 #include <limits.h>
 
 #define UNDS_TRACK_MEM
-#include "../unds_heap_queue.h"
+#define UNDS_IMPLEMENTATION
+#include "../unds.h"
 
 #define INF INT_MAX / 4
 

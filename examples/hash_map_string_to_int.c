@@ -2,7 +2,8 @@
 #include <string.h>
 
 #define UNDS_TRACK_MEM
-#include "../unds_hash_map.h"
+#define UNDS_IMPLEMENTATION
+#include "../unds.h"
 
 // 문자열을 일차적으로 해싱한 후 이를 다시 해싱.
 // Ref: '김상진', "한국기술교육대학교", 자료구조및실습.

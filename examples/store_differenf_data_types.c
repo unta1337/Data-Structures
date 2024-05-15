@@ -3,7 +3,8 @@
 #include "../unds_memory.h"
 
 #define UNDS_TRACK_MEM
-#include "../unds_list.h"
+#define UNDS_IMPLEMENTATION
+#include "../unds.h"
 
 int main(void)
 {

@@ -3,7 +3,8 @@
 #include <time.h>
 
 #define UNDS_TRACK_MEM
-#include "../unds_heap_queue.h"
+#define UNDS_IMPLEMENTATION
+#include "../unds.h"
 
 #define NUM_ARR (1 << 8)
 
