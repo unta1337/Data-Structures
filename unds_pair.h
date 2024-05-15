@@ -1,14 +1,23 @@
-#ifndef __PAIR_H
-#define __PAIR_H
+#ifndef __UNDS_PAIR_H
+#define __UNDS_PAIR_H
 
 #include <stdio.h>
+#include <string.h>
 
+#ifdef UNDS_TRACK_MEM
 #include "utils/memory.h"
+#else
+#include <stdlib.h>
+#define unds_malloc malloc
+#define unds_calloc calloc
+#define unds_realloc realloc
+#define unds_free free
+#endif
 
 /**
  * 서로 같거나 다른 자료형의 두 변수를 유지하는 페어
  */
-struct pair
+struct unds_pair_t
 {
     /**
      * 페어의 첫 번째 요소
@@ -29,13 +38,15 @@ struct pair
     size_t of_size_second;
 };
 
+typedef struct unds_pair_t unds_pair_t;
+
 /**
  * @brief 페어 생성
  * @param of_size_first 첫 번째 요소의 크기
  * @param of_size_first 두 번째 요소의 크기
  * @return 동적할당된 페어의 포인터
  */
-struct pair* pair_create(size_t of_size_first, size_t of_size_second)
+unds_pair_t* unds_pair_create(size_t of_size_first, size_t of_size_second)
 {
     if (of_size_first == 0 || of_size_second == 0)
     {
@@ -43,10 +54,10 @@ struct pair* pair_create(size_t of_size_first, size_t of_size_second)
         abort();
     }
 
-    struct pair* ths = (struct pair*)malloc_s(sizeof(struct pair));
+    unds_pair_t* ths = (unds_pair_t*)unds_malloc(sizeof(unds_pair_t));
 
-    ths->first = malloc_s(of_size_first);
-    ths->second = malloc_s(of_size_second);
+    ths->first = unds_malloc(of_size_first);
+    ths->second = unds_malloc(of_size_second);
     if (ths->first == NULL || ths->second == NULL)
     {
         fprintf(stderr, "stderr: Failed to reallocate memory for pair in pair_create().\n");
@@ -67,7 +78,7 @@ struct pair* pair_create(size_t of_size_first, size_t of_size_second)
  * @param of_size_first 두 번째 요소의 크기
  * @return 동적할당된 페어의 포인터
  */
-struct pair* pair_make(void* first, size_t of_size_first, void* second, size_t of_size_second)
+unds_pair_t* unds_pair_make(void* first, size_t of_size_first, void* second, size_t of_size_second)
 {
     if (first == NULL || second == NULL)
     {
@@ -75,7 +86,7 @@ struct pair* pair_make(void* first, size_t of_size_first, void* second, size_t o
         abort();
     }
 
-    struct pair* ths = pair_create(of_size_first, of_size_second);
+    unds_pair_t* ths = unds_pair_create(of_size_first, of_size_second);
 
     memcpy(ths->first, first, ths->of_size_first);
     memcpy(ths->second, second, ths->of_size_second);
@@ -87,11 +98,11 @@ struct pair* pair_make(void* first, size_t of_size_first, void* second, size_t o
  * @brief 페어 삭제
  * @param 삭제할 페어의 포인터
  */
-void pair_delete(struct pair* ths)
+void unds_pair_delete(unds_pair_t* ths)
 {
-    free_s(ths->first);
-    free_s(ths->second);
-    free_s(ths);
+    unds_free(ths->first);
+    unds_free(ths->second);
+    unds_free(ths);
 }
 
 /**
@@ -99,7 +110,7 @@ void pair_delete(struct pair* ths)
  * @param ths 대상 페어 포인터
  * @param dest 복사할 목적지
  */
-void pair_get_first(struct pair* ths, void* dest)
+void unds_pair_get_first(unds_pair_t* ths, void* dest)
 {
     memcpy(dest, ths->first, ths->of_size_first);
 }
@@ -109,7 +120,7 @@ void pair_get_first(struct pair* ths, void* dest)
  * @param ths 대상 페어 포인터
  * @param dest 복사할 목적지
  */
-void pair_get_second(struct pair* ths, void* dest)
+void unds_pair_get_second(unds_pair_t* ths, void* dest)
 {
     memcpy(dest, ths->second, ths->of_size_second);
 }
@@ -119,7 +130,7 @@ void pair_get_second(struct pair* ths, void* dest)
  * @param ths 대상 페어 포인터
  * @param value 설정할 값
  */
-void pair_set_first(struct pair* ths, void* value)
+void unds_pair_set_first(unds_pair_t* ths, void* value)
 {
     memcpy(ths->first, value, ths->of_size_first);
 }
@@ -129,7 +140,7 @@ void pair_set_first(struct pair* ths, void* value)
  * @param ths 대상 페어 포인터
  * @param value 설정할 값
  */
-void pair_set_second(struct pair* ths, void* value)
+void unds_pair_set_second(unds_pair_t* ths, void* value)
 {
     memcpy(ths->second, value, ths->of_size_second);
 }

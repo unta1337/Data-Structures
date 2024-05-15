@@ -1,18 +1,28 @@
-#ifndef __HASH_MAP_H
-#define __HASH_MAP_H
+#ifndef __UNDS_HASH_MAP_H
+#define __UNDS_HASH_MAP_H
 
-#include "list.h"
-#include "pair.h"
+#include "unds_list.h"
+#include "unds_pair.h"
+
+#ifdef UNDS_TRACK_MEM
+#include "unds_memory.h"
+#else
+#include <stdlib.h>
+#define unds_malloc malloc
+#define unds_calloc calloc
+#define unds_realloc realloc
+#define unds_free free
+#endif
 
 /**
  * 리스트와 페어를 기반으로 구현된 가변 크기 해시맵
  */
-struct hash_map
+struct unds_hash_map_t
 {
     /**
      * 실제 데이터를 저장하기 위한 리스트
      */
-    struct list** arr;
+    unds_list_t** arr;
     /**
      * 해시맵의 한계 용량
      */
@@ -40,13 +50,15 @@ struct hash_map
     int (*comp)(const void* p, const void* q);
 };
 
+typedef struct unds_hash_map_t unds_hash_map_t;
+
 /**
  * *내부 함수
  *
  * @brief 해시맵의 크기를 두 배로 증가
  * @param ths 대상 해시맵 포인터
  */
-void __hash_map_double(struct hash_map* ths);
+void __unds_hash_map_double(unds_hash_map_t* ths);
 
 /**
  * *내부 함수
@@ -54,7 +66,7 @@ void __hash_map_double(struct hash_map* ths);
  * @brief 해시맵의 크기를 반으로 감소
  * @param ths 대상 해시맵 포인터
  */
-void __hash_map_half(struct hash_map* ths);
+void __unds_hash_map_half(unds_hash_map_t* ths);
 
 /**
  * *참고: hash는 키의 해싱에 사용되는 함수로서, 해시맵의 크기에 적절한 충분히 큰 값을 반환해야 한다.
@@ -71,13 +83,13 @@ void __hash_map_half(struct hash_map* ths);
  * @param comp 키의 비교에 사용되는 해시 함수
  * @return 동적으로 생성된 해시맵 포인터
  */
-struct hash_map* hash_map_create(size_t of_size_key, size_t of_size_value, size_t (*hash)(const void *p), int (*comp)(const void* p, const void* q));
+unds_hash_map_t* unds_hash_map_create(size_t of_size_key, size_t of_size_value, size_t (*hash)(const void *p), int (*comp)(const void* p, const void* q));
 
 /**
  * @brief 해시맵 삭제
  * @param ths 대상 해시맵 포인터
  */
-void hash_map_delete(struct hash_map* ths);
+void unds_hash_map_delete(unds_hash_map_t* ths);
 
 /**
  * *참고: 로드 팩터는 해시맵의 한계 용량 대비 실제 요소의 대수의 비율이다.
@@ -90,7 +102,7 @@ void hash_map_delete(struct hash_map* ths);
  * @brief 해시맵의 로드 팩터 반환
  * @param ths 해시맵의 로드 팩터
  */
-float hash_map_get_load_factor(struct hash_map* ths);
+float unds_hash_map_get_load_factor(unds_hash_map_t* ths);
 
 /**
  * 해시맵에 키에 대응하는 요소가 존재하지 않으면 새로 삽입한다.
@@ -101,14 +113,14 @@ float hash_map_get_load_factor(struct hash_map* ths);
  * @param key 키로 사용할 변수의 포인터
  * @param value 값으로 사용할 변수의 포인터
  */
-void hash_map_push(struct hash_map* ths, void* key, void* value);
+void unds_hash_map_push(unds_hash_map_t* ths, void* key, void* value);
 
 /**
  * @brief 해시맵에서 키에 대응하는 요소를 삭제
  * @param ths 대상 해시맵 포인터
  * @param key 키로 사용할 변수의 포인터
  */
-void hash_map_pop(struct hash_map* ths, void* key);
+void unds_hash_map_pop(unds_hash_map_t* ths, void* key);
 
 /**
  * @brief 해시맵에서 키에 대응하는 값을 dest에 복사
@@ -116,7 +128,7 @@ void hash_map_pop(struct hash_map* ths, void* key);
  * @param dest 값을 복사할 목적지
  * @param key 키로 사용할 변수의 포인터
  */
-void hash_map_get(struct hash_map* ths, void* dest, void* key);
+void unds_hash_map_get(unds_hash_map_t* ths, void* dest, void* key);
 
 /**
  * @brief 해시맵에서 키에 대응하는 요소의 값을 value로 설정
@@ -124,7 +136,7 @@ void hash_map_get(struct hash_map* ths, void* dest, void* key);
  * @param key 키로 사용할 변수의 포인터
  * @param value 요소의 값으로 사용할 변수의 포인터
  */
-void hash_map_set(struct hash_map* ths, void* key, void* value);
+void unds_hash_map_set(unds_hash_map_t* ths, void* key, void* value);
 
 /**
  * @brief 해시맵에 키에 대응하는 요소가 있는지 검사
@@ -132,22 +144,22 @@ void hash_map_set(struct hash_map* ths, void* key, void* value);
  * @param 키로 사용할 변수의 포인터
  * @return 키에 대응하는 요소의 존재 유무
  */
-bool hash_map_has(struct hash_map* ths, void* key);
+bool unds_hash_map_has(unds_hash_map_t* ths, void* key);
 
 /**
  * @brief 해시맵 초기화
  * @param ths 대상 해시맵 포인터
  */
-void hash_map_clear(struct hash_map* ths);
+void unds_hash_map_clear(unds_hash_map_t* ths);
 
-void __hash_map_double(struct hash_map* ths)
+void __unds_hash_map_double(unds_hash_map_t* ths)
 {
-    struct list** delete_arr = ths->arr;
+    unds_list_t** delete_arr = ths->arr;
 
     ths->capacity *= 2;
     ths->size = 0;
 
-    ths->arr = (struct list**)malloc_s(ths->capacity * sizeof(struct list*));
+    ths->arr = (unds_list_t**)unds_malloc(ths->capacity * sizeof(unds_list_t*));
     if (ths->arr == NULL)
     {
         fprintf(stderr, "stderr: Failed to allocate memory for hash map in __hash_map_double()\n");
@@ -155,30 +167,30 @@ void __hash_map_double(struct hash_map* ths)
     }
 
     for (size_t i = 0; i < ths->capacity; i++)
-        ths->arr[i] = list_create(sizeof(struct pair*));
+        ths->arr[i] = unds_list_create(sizeof(unds_pair_t*));
 
     for (size_t i = 0; i < ths->capacity / 2; i++)
     {
         for (size_t j = 0; j < delete_arr[i]->size; j++)
         {
-            struct pair* pair;
-            list_get(delete_arr[i], &pair, j);
-            hash_map_push(ths, pair->first, pair->second);
-            pair_delete(pair);
+            unds_pair_t* pair;
+            unds_list_get(delete_arr[i], &pair, j);
+            unds_hash_map_push(ths, pair->first, pair->second);
+            unds_pair_delete(pair);
         }
-        list_delete(delete_arr[i]);
+        unds_list_delete(delete_arr[i]);
     }
-    free_s(delete_arr);
+    unds_free(delete_arr);
 }
 
-void __hash_map_half(struct hash_map* ths)
+void __unds_hash_map_half(unds_hash_map_t* ths)
 {
-    struct list** delete_arr = ths->arr;
+    unds_list_t** delete_arr = ths->arr;
 
     ths->capacity /= 2;
     ths->size = 0;
 
-    ths->arr = (struct list**)malloc_s(ths->capacity * sizeof(struct list*));
+    ths->arr = (unds_list_t**)unds_malloc(ths->capacity * sizeof(unds_list_t*));
     if (ths->arr == NULL)
     {
         fprintf(stderr, "stderr: Failed to allocate memory for hash map in __hash_map_half()\n");
@@ -186,27 +198,27 @@ void __hash_map_half(struct hash_map* ths)
     }
 
     for (size_t i = 0; i < ths->capacity; i++)
-        ths->arr[i] = list_create(sizeof(struct pair*));
+        ths->arr[i] = unds_list_create(sizeof(unds_pair_t*));
 
     for (size_t i = 0; i < ths->capacity * 2; i++)
     {
         for (size_t j = 0; j < delete_arr[i]->size; j++)
         {
-            struct pair* pair;
-            list_get(delete_arr[i], &pair, j);
-            hash_map_push(ths, pair->first, pair->second);
-            pair_delete(pair);
+            unds_pair_t* pair;
+            unds_list_get(delete_arr[i], &pair, j);
+            unds_hash_map_push(ths, pair->first, pair->second);
+            unds_pair_delete(pair);
         }
-        list_delete(delete_arr[i]);
+        unds_list_delete(delete_arr[i]);
     }
-    free_s(delete_arr);
+    unds_free(delete_arr);
 }
 
-struct hash_map* hash_map_create(size_t of_size_key, size_t of_size_value, size_t (*hash)(const void *p), int (*comp)(const void* p, const void* q))
+unds_hash_map_t* unds_hash_map_create(size_t of_size_key, size_t of_size_value, size_t (*hash)(const void *p), int (*comp)(const void* p, const void* q))
 {
-    struct hash_map* ths = (struct hash_map*)malloc_s(sizeof(struct hash_map));
+    unds_hash_map_t* ths = (unds_hash_map_t*)unds_malloc(sizeof(unds_hash_map_t));
 
-    ths->arr = (struct list**)malloc_s(21 * sizeof(struct list*));
+    ths->arr = (unds_list_t**)unds_malloc(21 * sizeof(unds_list_t*));
     if (ths->arr == NULL)
     {
         fprintf(stderr, "stderr: Failed to allocate memory for hash map in hash_map_create()\n");
@@ -214,7 +226,7 @@ struct hash_map* hash_map_create(size_t of_size_key, size_t of_size_value, size_
     }
 
     for (int i = 0; i < 21; i++)
-        ths->arr[i] = list_create(sizeof(struct pair*));
+        ths->arr[i] = unds_list_create(sizeof(unds_pair_t*));
 
     ths->capacity = 21;
     ths->size = 0;
@@ -227,60 +239,60 @@ struct hash_map* hash_map_create(size_t of_size_key, size_t of_size_value, size_
     return ths;
 }
 
-void hash_map_delete(struct hash_map* ths)
+void unds_hash_map_delete(unds_hash_map_t* ths)
 {
     for (size_t i = 0; i < ths->capacity; i++)
     {
         for (size_t j = 0; j < ths->arr[i]->size; j++)
-            pair_delete(((struct pair**)ths->arr[i]->arr)[j]);
-        list_delete(ths->arr[i]);
+            unds_pair_delete(((unds_pair_t**)ths->arr[i]->arr)[j]);
+        unds_list_delete(ths->arr[i]);
     }
-    free_s(ths->arr);
-    free_s(ths);
+    unds_free(ths->arr);
+    unds_free(ths);
 }
 
-float hash_map_get_load_factor(struct hash_map* ths)
+float unds_hash_map_get_load_factor(unds_hash_map_t* ths)
 {
     return (float)ths->size / ths->capacity;
 }
 
-void hash_map_push(struct hash_map* ths, void* key, void* value)
+void unds_hash_map_push(unds_hash_map_t* ths, void* key, void* value)
 {
-    if (hash_map_get_load_factor(ths) > 0.7)
-        __hash_map_double(ths);
+    if (unds_hash_map_get_load_factor(ths) > 0.7)
+        __unds_hash_map_double(ths);
 
     size_t index = ths->hash(key) % ths->capacity;
 
     for (size_t i = 0; i < ths->arr[index]->size; i++)
     {
-        struct pair* pair = ((struct pair**)ths->arr[index]->arr)[i];
+        unds_pair_t* pair = ((unds_pair_t**)ths->arr[index]->arr)[i];
         if (ths->comp(key, pair->first) == 0)
         {
             return;
         }
     }
 
-    struct pair* pair = pair_make(key, ths->of_size_key, value, ths->of_size_value);
-    list_push(ths->arr[index], &pair);
+    unds_pair_t* pair = unds_pair_make(key, ths->of_size_key, value, ths->of_size_value);
+    unds_list_push(ths->arr[index], &pair);
 
     ths->size++;
 }
 
-void hash_map_pop(struct hash_map* ths, void* key)
+void unds_hash_map_pop(unds_hash_map_t* ths, void* key)
 {
     size_t index = ths->hash(key) % ths->capacity;
 
     for (size_t i = 0; i < ths->arr[index]->size; i++)
     {
-        struct pair* pair = ((struct pair**)ths->arr[index]->arr)[i];
+        unds_pair_t* pair = ((unds_pair_t**)ths->arr[index]->arr)[i];
         if (ths->comp(key, pair->first) == 0)
         {
-            pair_delete(pair);
-            list_remove(ths->arr[index], i);
+            unds_pair_delete(pair);
+            unds_list_remove(ths->arr[index], i);
             ths->size--;
 
-            if (ths->capacity > 21 && hash_map_get_load_factor(ths) < 0.3)
-                __hash_map_half(ths);
+            if (ths->capacity > 21 && unds_hash_map_get_load_factor(ths) < 0.3)
+                __unds_hash_map_half(ths);
 
             return;
         }
@@ -290,13 +302,13 @@ void hash_map_pop(struct hash_map* ths, void* key)
     abort();
 }
 
-void hash_map_get(struct hash_map* ths, void* dest, void* key)
+void unds_hash_map_get(unds_hash_map_t* ths, void* dest, void* key)
 {
     size_t index = ths->hash(key) % ths->capacity;
 
     for (size_t i = 0; i < ths->arr[index]->size; i++)
     {
-        struct pair* pair = ((struct pair**)ths->arr[index]->arr)[i];
+        unds_pair_t* pair = ((unds_pair_t**)ths->arr[index]->arr)[i];
         if (ths->comp(key, pair->first) == 0)
         {
             memcpy(dest, pair->second, ths->of_size_value);
@@ -308,16 +320,16 @@ void hash_map_get(struct hash_map* ths, void* dest, void* key)
     abort();
 }
 
-void hash_map_set(struct hash_map* ths, void* key, void* value)
+void unds_hash_map_set(unds_hash_map_t* ths, void* key, void* value)
 {
     size_t index = ths->hash(key) % ths->capacity;
 
     for (size_t i = 0; i < ths->arr[index]->size; i++)
     {
-        struct pair* pair = ((struct pair**)ths->arr[index]->arr)[i];
+        unds_pair_t* pair = ((unds_pair_t**)ths->arr[index]->arr)[i];
         if (ths->comp(key, pair->first) == 0)
         {
-            pair_set_second(pair, value);
+            unds_pair_set_second(pair, value);
             return;
         }
     }
@@ -326,13 +338,13 @@ void hash_map_set(struct hash_map* ths, void* key, void* value)
     abort();
 }
 
-bool hash_map_has(struct hash_map* ths, void* key)
+bool unds_hash_map_has(unds_hash_map_t* ths, void* key)
 {
     size_t index = ths->hash(key) % ths->capacity;
 
     for (size_t i = 0; i < ths->arr[index]->size; i++)
     {
-        struct pair* pair = ((struct pair**)ths->arr[index]->arr)[i];
+        unds_pair_t* pair = ((unds_pair_t**)ths->arr[index]->arr)[i];
         if (ths->comp(key, pair->first) == 0)
             return true;
     }
@@ -340,15 +352,15 @@ bool hash_map_has(struct hash_map* ths, void* key)
     return false;
 }
 
-void hash_map_clear(struct hash_map* ths)
+void unds_hash_map_clear(unds_hash_map_t* ths)
 {
     for (size_t i = 0; i < ths->capacity; i++)
     {
         size_t iter = ths->arr[i]->size;
         for (size_t j = 0; j < iter; j++)
         {
-            struct pair* pair = ((struct pair**)ths->arr[i]->arr)[j];
-            hash_map_pop(ths, pair->first);
+            unds_pair_t* pair = ((unds_pair_t**)ths->arr[i]->arr)[j];
+            unds_hash_map_pop(ths, pair->first);
         }
     }
 }

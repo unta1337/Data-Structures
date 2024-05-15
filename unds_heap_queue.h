@@ -1,15 +1,24 @@
-#ifndef __HEAP_QUEUE_H
-#define __HEAP_QUEUE_H
+#ifndef __UNDS_HEAP_QUEUE_H
+#define __UNDS_HEAP_QUEUE_H
 
 #include <stdio.h>
 #include <stdbool.h>
+#include <string.h>
 
-#include "utils/memory.h"
+#ifdef UNDS_TRACK_MEM
+#include "unds_memory.h"
+#else
+#include <stdlib.h>
+#define unds_malloc malloc
+#define unds_calloc calloc
+#define unds_realloc realloc
+#define unds_free free
+#endif
 
 /**
  * 배열을 기반으로 구현된 가변 크기 힙큐
  */
-struct heap_queue
+struct unds_heap_queue_t
 {
     /**
      * 실제 데이터를 저장할 공간에 대한 포인터
@@ -34,16 +43,18 @@ struct heap_queue
     int (*comp)(const void* p, const void* q);
 };
 
+typedef struct unds_heap_queue_t unds_heap_queue_t;
+
 /**
  * *내부 함수
  *
  * @brief 힙큐 크기 2배 증가
  * @param ths 대상 힙큐 포인터
  */
-void __heap_queue_double(struct heap_queue* ths)
+void __unds_heap_queue_double(unds_heap_queue_t* ths)
 {
     ths->capacity *= 2;
-    ths->arr = realloc_s(ths->arr, ths->capacity * ths->of_size);
+    ths->arr = unds_realloc(ths->arr, ths->capacity * ths->of_size);
     if (ths->arr == NULL)
     {
         fprintf(stderr, "stderr: Failed to reallocate memory for heap_queue in __heap_queue_double().\n");
@@ -57,13 +68,13 @@ void __heap_queue_double(struct heap_queue* ths)
  * @brief 힙큐 크기 2배 감소
  * @param ths 대상 힙큐 포인터
  */
-void __heap_queue_half(struct heap_queue* ths)
+void __unds_heap_queue_half(unds_heap_queue_t* ths)
 {
     if (ths->size == 0)
         return;
 
     ths->capacity /= 2;
-    ths->arr = realloc_s(ths->arr, ths->capacity * ths->of_size);
+    ths->arr = unds_realloc(ths->arr, ths->capacity * ths->of_size);
     if (ths->arr == NULL)
     {
         fprintf(stderr, "stderr: Failed to reallocate memory for heap_queue in __heap_queue_half().\n");
@@ -77,14 +88,14 @@ void __heap_queue_half(struct heap_queue* ths)
  * @brief 힙큐의 크기를 2의 제곱수로 교정
  * @param ths 대상 힙큐 포인터
  */
-void __heap_queue_capacity_correction(struct heap_queue* ths)
+void __unds_heap_queue_capacity_correction(unds_heap_queue_t* ths)
 {
     size_t correct_capacity = 1;
 
     while (correct_capacity <= ths->size)
         correct_capacity *= 2;
 
-    ths->arr = realloc_s(ths->arr, correct_capacity * ths->of_size);
+    ths->arr = unds_realloc(ths->arr, correct_capacity * ths->of_size);
     if (ths->arr == NULL)
     {
         fprintf(stderr, "stderr: Failed to reallocate memory for stack in __heap_queue_capacity_correction().\n");
@@ -101,7 +112,7 @@ void __heap_queue_capacity_correction(struct heap_queue* ths)
  * @param index 왼쪽 자식 요소를 계산할 부모 요소의 인덱스
  * @return 왼쪽 자식 요소의 인덱스
  */
-size_t __heap_queue_get_left_child(size_t index)
+size_t __unds_heap_queue_get_left_child(size_t index)
 {
     return 2 * index + 1;
 }
@@ -113,7 +124,7 @@ size_t __heap_queue_get_left_child(size_t index)
  * @param index 부모 요소를 계산할 자식 요소의 인덱스
  * @return 부모 요소의 인덱스
  */
-size_t __heap_queue_get_parent(size_t index)
+size_t __unds_heap_queue_get_parent(size_t index)
 {
     if (index == 0)
         return 0;
@@ -127,24 +138,24 @@ size_t __heap_queue_get_parent(size_t index)
  * @param ths 대상 힙큐 포인터
  * @param index 힙으로 변환할 기준이 되는 요소의 인덱스
  */
-void __heap_queue_reheap_up(struct heap_queue* ths, size_t index)
+void __unds_heap_queue_reheap_up(unds_heap_queue_t* ths, size_t index)
 {
     size_t node = index;
-    size_t parent = __heap_queue_get_parent(node);
+    size_t parent = __unds_heap_queue_get_parent(node);
 
     while (index > 0)
     {
         if (ths->comp((char*)ths->arr + node * ths->of_size, (char*)ths->arr + parent * ths->of_size) != -1)
             break;
 
-        void* temp = malloc_s(ths->of_size);
+        void* temp = unds_malloc(ths->of_size);
         memcpy(temp, (char*)ths->arr + node * ths->of_size, ths->of_size);
         memcpy((char*)ths->arr + node * ths->of_size, (char*)ths->arr + parent * ths->of_size, ths->of_size);
         memcpy((char*)ths->arr + parent * ths->of_size, temp, ths->of_size);
-        free_s(temp);
+        unds_free(temp);
 
         node = parent;
-        parent = __heap_queue_get_parent(node);
+        parent = __unds_heap_queue_get_parent(node);
     }
 }
 
@@ -155,10 +166,10 @@ void __heap_queue_reheap_up(struct heap_queue* ths, size_t index)
  * @param ths 대상 힙큐 포인터
  * @param index 힙으로 변환할 기준이 되는 요소의 인덱스
  */
-void __heap_queue_reheap_down(struct heap_queue* ths, size_t index)
+void __unds_heap_queue_reheap_down(unds_heap_queue_t* ths, size_t index)
 {
     size_t node = index;
-    size_t child = __heap_queue_get_left_child(index);
+    size_t child = __unds_heap_queue_get_left_child(index);
 
     while (child < ths->size)
     {
@@ -171,14 +182,14 @@ void __heap_queue_reheap_down(struct heap_queue* ths, size_t index)
         if (ths->comp((char*)ths->arr + higher_priority * ths->of_size, (char*)ths->arr + node * ths->of_size) != -1)
             break;
 
-        void* temp = malloc_s(ths->of_size);
+        void* temp = unds_malloc(ths->of_size);
         memcpy(temp, (char*)ths->arr + higher_priority * ths->of_size, ths->of_size);
         memcpy((char*)ths->arr + higher_priority * ths->of_size, (char*)ths->arr + node * ths->of_size, ths->of_size);
         memcpy((char*)ths->arr + node * ths->of_size, temp, ths->of_size);
-        free_s(temp);
+        unds_free(temp);
 
         node = higher_priority;
-        child = __heap_queue_get_left_child(node);
+        child = __unds_heap_queue_get_left_child(node);
     }
 }
 
@@ -188,7 +199,7 @@ void __heap_queue_reheap_down(struct heap_queue* ths, size_t index)
  * @brief 힙큐의 배열을 힙으로 변환
  * @param ths 대상 힙큐 포인터
  */
-void __heap_queue_heapify(struct heap_queue* ths)
+void __unds_heap_queue_heapify(unds_heap_queue_t* ths)
 {
     if (ths->size == 0)
         return;
@@ -199,8 +210,8 @@ void __heap_queue_heapify(struct heap_queue* ths)
 
     while (index > 0)
     {
-        size_t parent = __heap_queue_get_parent(index);
-        __heap_queue_reheap_down(ths, parent);
+        size_t parent = __unds_heap_queue_get_parent(index);
+        __unds_heap_queue_reheap_down(ths, parent);
         index -= 2;
     }
 }
@@ -211,11 +222,11 @@ void __heap_queue_heapify(struct heap_queue* ths)
  * @param comp 힙큐 연산 시에 사용되는 요소 비교 함수
  * @return 동적으로 생성된 힙큐의 주소
  */
-struct heap_queue* heap_queue_create(size_t of_size, int (*comp)(const void* p, const void* q))
+unds_heap_queue_t* unds_heap_queue_create(size_t of_size, int (*comp)(const void* p, const void* q))
 {
-    struct heap_queue* ths = (struct heap_queue*)malloc_s(sizeof(struct heap_queue));
+    unds_heap_queue_t* ths = (unds_heap_queue_t*)unds_malloc(sizeof(unds_heap_queue_t));
 
-    ths->arr = malloc_s(of_size);
+    ths->arr = unds_malloc(of_size);
     if (ths->arr == NULL)
     {
         fprintf(stderr, "stderr: Failed to allocate memory for heap queue in heap_queue_create()\n");
@@ -237,7 +248,7 @@ struct heap_queue* heap_queue_create(size_t of_size, int (*comp)(const void* p, 
  * @param of_size 힙큐로 생성할 배열의 단일 요소의 크기
  * @return 동적으로 생성된 힙큐의 주소
  */
-struct heap_queue* heap_queue_create_from_array(void* arr, size_t size, size_t of_size, int (*comp)(const void* p, const void* q))
+unds_heap_queue_t* unds_heap_queue_create_from_array(void* arr, size_t size, size_t of_size, int (*comp)(const void* p, const void* q))
 {
     if (arr == NULL)
     {
@@ -250,9 +261,9 @@ struct heap_queue* heap_queue_create_from_array(void* arr, size_t size, size_t o
         abort();
     }
 
-    struct heap_queue* ths = (struct heap_queue*)malloc_s(sizeof(struct heap_queue));
+    unds_heap_queue_t* ths = (unds_heap_queue_t*)unds_malloc(sizeof(unds_heap_queue_t));
 
-    ths->arr = malloc_s(size * of_size);
+    ths->arr = unds_malloc(size * of_size);
     if (ths->arr == NULL)
     {
         fprintf(stderr, "stderr: Failed to allocate memory for heap_queue in heap_queue_create_from_array().\n");
@@ -265,8 +276,8 @@ struct heap_queue* heap_queue_create_from_array(void* arr, size_t size, size_t o
     ths->comp = comp;
 
     memcpy(ths->arr, arr, size * of_size);
-    __heap_queue_capacity_correction(ths);
-    __heap_queue_heapify(ths);
+    __unds_heap_queue_capacity_correction(ths);
+    __unds_heap_queue_heapify(ths);
 
     return ths;
 }
@@ -278,7 +289,7 @@ struct heap_queue* heap_queue_create_from_array(void* arr, size_t size, size_t o
  * @param of_size 힙큐의 기본값으로 설정할 값의 크기
  * @return 동적으로 생성된 힙큐의 주소
  */
-struct heap_queue* heap_queue_create_from_value(void* value, size_t size, size_t of_size, int (*comp)(const void* p, const void* q))
+unds_heap_queue_t* unds_heap_queue_create_from_value(void* value, size_t size, size_t of_size, int (*comp)(const void* p, const void* q))
 {
     if (value == NULL)
     {
@@ -291,8 +302,8 @@ struct heap_queue* heap_queue_create_from_value(void* value, size_t size, size_t
         abort();
     }
 
-    struct heap_queue* ths = (struct heap_queue*)malloc_s(sizeof(struct heap_queue));
-    ths->arr = malloc_s(size * of_size);
+    unds_heap_queue_t* ths = (unds_heap_queue_t*)unds_malloc(sizeof(unds_heap_queue_t));
+    ths->arr = unds_malloc(size * of_size);
     if (ths->arr == NULL)
     {
         fprintf(stderr, "stderr: Failed to allocate memory for heap_queue in heap_queue_create_from_array().\n");
@@ -306,7 +317,7 @@ struct heap_queue* heap_queue_create_from_value(void* value, size_t size, size_t
 
     for (size_t i = 0; i < size; i++)
         memcpy((char*)ths->arr + i * of_size, value, of_size);
-    __heap_queue_capacity_correction(ths);
+    __unds_heap_queue_capacity_correction(ths);
     
     return ths;
 }
@@ -315,10 +326,10 @@ struct heap_queue* heap_queue_create_from_value(void* value, size_t size, size_t
  * @brief 힙큐 삭제
  * @param ths 대상 힙큐 포인터
  */
-void heap_queue_delete(struct heap_queue* ths)
+void unds_heap_queue_delete(unds_heap_queue_t* ths)
 {
-    free_s(ths->arr);
-    free_s(ths);
+    unds_free(ths->arr);
+    unds_free(ths);
 }
 
 /**
@@ -326,7 +337,7 @@ void heap_queue_delete(struct heap_queue* ths)
  * @param ths 대상 힙큐 포인터
  * @return 힙큐 빔 여부
  */
-bool heap_queue_empty(struct heap_queue* ths)
+bool unds_heap_queue_empty(unds_heap_queue_t* ths)
 {
     return ths->size == 0;
 }
@@ -336,13 +347,13 @@ bool heap_queue_empty(struct heap_queue* ths)
  * @param ths 대상 덱 포인터
  * @param value 삽입할 대상을 가리키는 포인터
  */
-void heap_queue_push(struct heap_queue* ths, void* value)
+void unds_heap_queue_push(unds_heap_queue_t* ths, void* value)
 {
     if (ths->size == ths->capacity)
-        __heap_queue_double(ths);
+        __unds_heap_queue_double(ths);
 
     memcpy((char*)ths->arr + ths->size * ths->of_size, value, ths->of_size);
-    __heap_queue_reheap_up(ths, ths->size);
+    __unds_heap_queue_reheap_up(ths, ths->size);
 
     ths->size++;
 }
@@ -351,9 +362,9 @@ void heap_queue_push(struct heap_queue* ths, void* value)
  * @brief 힙큐의 첫 요소를 삭제
  * @param ths 대상 힙큐 포인터
  */
-void heap_queue_pop(struct heap_queue* ths)
+void unds_heap_queue_pop(unds_heap_queue_t* ths)
 {
-    if (heap_queue_empty(ths))
+    if (unds_heap_queue_empty(ths))
     {
         fprintf(stderr, "stderr: Failed to pop an element from heap queue because the heap queue is empty.\n");
         abort();
@@ -362,10 +373,10 @@ void heap_queue_pop(struct heap_queue* ths)
     ths->size--;
 
     memcpy(ths->arr, (char*)ths->arr + ths->size * ths->of_size, ths->of_size);
-    __heap_queue_reheap_down(ths, 0);
+    __unds_heap_queue_reheap_down(ths, 0);
 
     if (ths->size == ths->capacity / 2)
-        __heap_queue_half(ths);
+        __unds_heap_queue_half(ths);
 }
 
 /**
@@ -373,9 +384,9 @@ void heap_queue_pop(struct heap_queue* ths)
  * @param ths 대상 힙큐 포인터
  * @param dest 요소를 복사할 목적지
  */
-void heap_queue_front(struct heap_queue* ths, void* dest)
+void unds_heap_queue_front(unds_heap_queue_t* ths, void* dest)
 {
-    if (heap_queue_empty(ths))
+    if (unds_heap_queue_empty(ths))
     {
         fprintf(stderr, "stderr: Failed to read from the front of the heap queue because the heap queue is empty.\n");
         abort();
@@ -388,9 +399,9 @@ void heap_queue_front(struct heap_queue* ths, void* dest)
  * @brief 힙큐 초기화
  * @param ths 대상 힙큐 포인터
  */
-void heap_queue_clear(struct heap_queue* ths)
+void unds_heap_queue_clear(unds_heap_queue_t* ths)
 {
-    ths->arr = realloc_s(ths->arr, ths->of_size);
+    ths->arr = unds_realloc(ths->arr, ths->of_size);
     if (ths->arr == NULL)
     {
         fprintf(stderr, "stderr: Failed to reallocate memory for stack in heap_queue_clear().\n");

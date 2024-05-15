@@ -1,15 +1,24 @@
-#ifndef __LIST_H
-#define __LIST_H
+#ifndef __UNDS_LIST_H
+#define __UNDS_LIST_H
 
 #include <stdio.h>
 #include <stdbool.h>
+#include <string.h>
 
+#ifdef UNDS_TRACK_MEM
 #include "utils/memory.h"
+#else
+#include <stdlib.h>
+#define unds_malloc malloc
+#define unds_calloc calloc
+#define unds_realloc realloc
+#define unds_free free
+#endif
 
 /**
  * 배열을 기반으로 구현된 가변 길이 리스트
  */
-struct list
+struct unds_list_t
 {
     /**
      * 실제 데이터를 저장할 공간에 대한 포인터
@@ -29,16 +38,18 @@ struct list
     size_t of_size;
 };
 
+typedef struct unds_list_t unds_list_t;
+
 /**
  * *내부 함수
  *
  * @brief 리스트 크기 2배 증가
  * @param ths 대상 리스트 포인터
  */
-void __list_double(struct list* ths)
+void __unds_list_double(unds_list_t* ths)
 {
     ths->capacity *= 2;
-    ths->arr = realloc_s(ths->arr, ths->capacity * ths->of_size);
+    ths->arr = unds_realloc(ths->arr, ths->capacity * ths->of_size);
     if (ths->arr == NULL)
     {
         fprintf(stderr, "stderr: Failed to reallocate memory for list in __list_double().\n");
@@ -52,13 +63,13 @@ void __list_double(struct list* ths)
  * @brief 리스트 크기 2배 감소
  * @param ths 대상 리스트 포인터
  */
-void __list_half(struct list* ths)
+void __unds_list_half(unds_list_t* ths)
 {
     if (ths->size == 0)
         return;
 
     ths->capacity /= 2;
-    ths->arr = realloc_s(ths->arr, ths->capacity * ths->of_size);
+    ths->arr = unds_realloc(ths->arr, ths->capacity * ths->of_size);
     if (ths->arr == NULL)
     {
         fprintf(stderr, "stderr: Failed to reallocate memory for list in __list_half().\n");
@@ -72,14 +83,14 @@ void __list_half(struct list* ths)
  * @brief 리스트의 크기를 2의 제곱수로 교정
  * @param ths 대상 리스트 포인터
  */
-void __list_capacity_correction(struct list* ths)
+void __unds_list_capacity_correction(unds_list_t* ths)
 {
     size_t correct_capacity = 1;
 
     while (correct_capacity <= ths->size)
         correct_capacity *= 2;
 
-    ths->arr = realloc_s(ths->arr, correct_capacity * ths->of_size);
+    ths->arr = unds_realloc(ths->arr, correct_capacity * ths->of_size);
     if (ths->arr == NULL)
     {
         fprintf(stderr, "stderr: Failed to reallocate memory for stack in __list_capacity_correction().\n");
@@ -94,11 +105,11 @@ void __list_capacity_correction(struct list* ths)
  * @param of_size 리스트에 저장할 단일 요소의 크기
  * @return 동적으로 생성된 리스트의 주소
  */
-struct list* list_create(size_t of_size)
+unds_list_t* unds_list_create(size_t of_size)
 {
-    struct list* ths = (struct list*)malloc_s(sizeof(struct list));
+    unds_list_t* ths = (unds_list_t*)unds_malloc(sizeof(unds_list_t));
 
-    ths->arr = malloc_s(of_size);
+    ths->arr = unds_malloc(of_size);
     if (ths->arr == NULL)
     {
         fprintf(stderr, "stderr: Failed to allocate memory for list in list_create().\n");
@@ -119,7 +130,7 @@ struct list* list_create(size_t of_size)
  * @param of_size 리스트로 생성할 배열의 단일 요소의 크기
  * @return 동적으로 생성된 리스트의 주소
  */
-struct list* list_create_from_array(void* arr, size_t size, size_t of_size)
+unds_list_t* unds_list_create_from_array(void* arr, size_t size, size_t of_size)
 {
     if (arr == NULL)
     {
@@ -132,9 +143,9 @@ struct list* list_create_from_array(void* arr, size_t size, size_t of_size)
         abort();
     }
 
-    struct list* ths = (struct list*)malloc_s(sizeof(struct list));
+    unds_list_t* ths = (unds_list_t*)unds_malloc(sizeof(unds_list_t));
 
-    ths->arr = malloc_s(size * of_size);
+    ths->arr = unds_malloc(size * of_size);
     if (ths->arr == NULL)
     {
         fprintf(stderr, "stderr: Failed to allocate memory for list in list_create_from_array().\n");
@@ -146,7 +157,7 @@ struct list* list_create_from_array(void* arr, size_t size, size_t of_size)
     ths->of_size = of_size;
 
     memcpy(ths->arr, arr, size * of_size);
-    __list_capacity_correction(ths);
+    __unds_list_capacity_correction(ths);
 
     return ths;
 }
@@ -158,7 +169,7 @@ struct list* list_create_from_array(void* arr, size_t size, size_t of_size)
  * @param of_size 리스트의 기본값으로 설정할 값의 크기
  * @return 동적으로 생성된 리스트의 주소
  */
-struct list* list_create_from_value(void* value, size_t size, size_t of_size)
+unds_list_t* unds_list_create_from_value(void* value, size_t size, size_t of_size)
 {
     if (value == NULL)
     {
@@ -171,8 +182,8 @@ struct list* list_create_from_value(void* value, size_t size, size_t of_size)
         abort();
     }
 
-    struct list* ths = (struct list*)malloc_s(sizeof(struct list));
-    ths->arr = malloc_s(size * of_size);
+    unds_list_t* ths = (unds_list_t*)unds_malloc(sizeof(unds_list_t));
+    ths->arr = unds_malloc(size * of_size);
     if (ths->arr == NULL)
     {
         fprintf(stderr, "stderr: Failed to allocate memory for list in list_create_from_array().\n");
@@ -185,7 +196,7 @@ struct list* list_create_from_value(void* value, size_t size, size_t of_size)
 
     for (size_t i = 0; i < size; i++)
         memcpy((char*)ths->arr + i * of_size, value, of_size);
-    __list_capacity_correction(ths);
+    __unds_list_capacity_correction(ths);
     
     return ths;
 }
@@ -194,10 +205,10 @@ struct list* list_create_from_value(void* value, size_t size, size_t of_size)
  * @brief 리스트 삭제
  * @param ths 대상 리스트 포인터
  */
-void list_delete(struct list* ths)
+void unds_list_delete(unds_list_t* ths)
 {
-    free_s(ths->arr);
-    free_s(ths);
+    unds_free(ths->arr);
+    unds_free(ths);
 }
 
 /**
@@ -205,7 +216,7 @@ void list_delete(struct list* ths)
  * @param ths 대상 리스트 포인터
  * @return 리스트 빔 여부
  */
-bool list_empty(struct list* ths)
+bool unds_list_empty(unds_list_t* ths)
 {
     return ths->size == 0;
 }
@@ -245,10 +256,10 @@ bool list_empty(struct list* ths)
  * @param ths 대상 리스트 포인터
  * @param value 삽입할 대상을 가리키는 포인터
  */
-void list_push(struct list* ths, void* value)
+void unds_list_push(unds_list_t* ths, void* value)
 {
     if (ths->size == ths->capacity)
-        __list_double(ths);
+        __unds_list_double(ths);
 
     memcpy((char*)ths->arr + ths->size++ * ths->of_size, value, ths->of_size);
 }
@@ -257,9 +268,9 @@ void list_push(struct list* ths, void* value)
  * @brief 리스트의 마지막 요소를 삭제
  * @param ths 대상 리스트 포인터
  */
-void list_pop(struct list* ths)
+void unds_list_pop(unds_list_t* ths)
 {
-    if (list_empty(ths))
+    if (unds_list_empty(ths))
     {
         fprintf(stderr, "stderr: Failed to pop an element from list because the list is empty.\n");
         abort();
@@ -268,7 +279,7 @@ void list_pop(struct list* ths)
     ths->size--;
 
     if (ths->size == ths->capacity / 2)
-        __list_half(ths);
+        __unds_list_half(ths);
 }
 
 /**
@@ -280,7 +291,7 @@ void list_pop(struct list* ths)
  *    list_pop(lst, temp);
  *
  *    또는,
- *    int* temp_v = malloc_s(2 * sizeof(int));
+ *    int* temp_v = unds_malloc(2 * sizeof(int));
  *    list_pop(lst, temp_v);
  *
  * @brief 리스트의 특정 요소를 dest에 복사
@@ -289,7 +300,7 @@ void list_pop(struct list* ths)
  * @param index 복사할 대상의 인덱스
  * @return 복사 성공 여부
  */
-void list_get(struct list* ths, void* dest, size_t index)
+void unds_list_get(unds_list_t* ths, void* dest, size_t index)
 {
     if (index >= ths->size)
     {
@@ -306,7 +317,7 @@ void list_get(struct list* ths, void* dest, size_t index)
  * @param index 변경할 대상의 인덱스
  * @param value 새로 삽입할 요소를 가리키는 포인터
  */
-void list_set(struct list* ths, size_t index, void* value)
+void unds_list_set(unds_list_t* ths, size_t index, void* value)
 {
     if (index >= ths->size)
     {
@@ -323,7 +334,7 @@ void list_set(struct list* ths, size_t index, void* value)
  * @param index 새로운 요소를 추가할 위치
  * @param value 새로 삽입할 요소를 가리키는 포인터
  */
-void list_insert(struct list* ths, size_t index, void* value)
+void unds_list_insert(unds_list_t* ths, size_t index, void* value)
 {
     if (index >= ths->size + 1)
     {
@@ -331,9 +342,9 @@ void list_insert(struct list* ths, size_t index, void* value)
         abort();
     }
 
-    void* temp = malloc_s(ths->of_size);
-    list_push(ths, temp);
-    free_s(temp);
+    void* temp = unds_malloc(ths->of_size);
+    unds_list_push(ths, temp);
+    unds_free(temp);
 
     memmove((char*)ths->arr + (index + 1) * ths->of_size, (char*)ths->arr + index * ths->of_size, (ths->size - index - 1) * ths->of_size);
     memcpy((char*)ths->arr + index * ths->of_size, value, ths->of_size);
@@ -344,7 +355,7 @@ void list_insert(struct list* ths, size_t index, void* value)
  * @param ths 대상 리스트 포인터
  * @param index 삭제할 요소의 인덱스
  */
-void list_remove(struct list* ths, size_t index)
+void unds_list_remove(unds_list_t* ths, size_t index)
 {
     if (index >= ths->size)
     {
@@ -353,16 +364,16 @@ void list_remove(struct list* ths, size_t index)
     }
 
     memmove((char*)ths->arr + index * ths->of_size, (char*)ths->arr + (index + 1) * ths->of_size, (ths->size - index) * ths->of_size);
-    list_pop(ths);
+    unds_list_pop(ths);
 }
 
 /**
  * @brief 리스트 초기화
  * @param ths 대상 리스트 포인터
  */
-void list_clear(struct list* ths)
+void unds_list_clear(unds_list_t* ths)
 {
-    ths->arr = realloc_s(ths->arr, ths->of_size);
+    ths->arr = unds_realloc(ths->arr, ths->of_size);
     if (ths->arr == NULL)
     {
         fprintf(stderr, "stderr: Failed to reallocate memory for list in list_clear().\n");
@@ -378,7 +389,7 @@ void list_clear(struct list* ths)
  * @param ths 대상 리스트 포인터
  * @param comp 정렬 기준을 정의하는 함수 (qsort의 comp와 동일)
  */
-void list_sort(struct list* ths, int (*comp)(const void*, const void*))
+void unds_list_sort(unds_list_t* ths, int (*comp)(const void*, const void*))
 {
     qsort(ths->arr, ths->size, ths->of_size, comp);
 }

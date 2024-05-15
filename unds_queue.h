@@ -1,15 +1,24 @@
-#ifndef __QUEUE_H
-#define __QUEUE_H
+#ifndef __UNDS_QUEUE_H
+#define __UNDS_QUEUE_H
 
 #include <stdio.h>
 #include <stdbool.h>
+#include <string.h>
 
-#include "utils/memory.h"
+#ifdef UNDS_TRACK_MEM
+#include "unds_memory.h"
+#else
+#include <stdlib.h>
+#define unds_malloc malloc
+#define unds_calloc calloc
+#define unds_realloc realloc
+#define unds_free free
+#endif
 
 /**
  * 배열을 기반으로 구현된 가변 크기 큐
  */
-struct queue
+struct unds_queue_t
 {
     /**
      * 실제 데이터를 저장할 공간에 대한 포인터
@@ -37,16 +46,18 @@ struct queue
     size_t tail;
 };
 
+typedef struct unds_queue_t unds_queue_t;
+
 /**
  * *내부 함수
  * 
  * @brief 큐 크기 2배 증가
  * @param ths 대상 큐 포인터
  */
-void __queue_double(struct queue* ths)
+void __unds_queue_double(unds_queue_t* ths)
 {
     ths->capacity *= 2;
-    ths->arr = realloc_s(ths->arr, ths->capacity * ths->of_size);
+    ths->arr = unds_realloc(ths->arr, ths->capacity * ths->of_size);
     if (ths->arr == NULL)
     {
         fprintf(stderr, "stderr: Failed to reallocate memory for queue in __queue_double().\n");
@@ -69,7 +80,7 @@ void __queue_double(struct queue* ths)
  * @brief 큐 크기 2배 감소
  * @param ths 대상 큐 포인터
  */
-void __queue_half(struct queue* ths)
+void __unds_queue_half(unds_queue_t* ths)
 {
     if (ths->size == 0)
         return;
@@ -86,7 +97,7 @@ void __queue_half(struct queue* ths)
     }
 
     ths->capacity /= 2;
-    ths->arr = realloc_s(ths->arr, ths->capacity * ths->of_size);
+    ths->arr = unds_realloc(ths->arr, ths->capacity * ths->of_size);
     if (ths->arr == NULL)
     {
         fprintf(stderr, "stderr: Failed to reallocate memory for queue in __queue_half().\n");
@@ -103,14 +114,14 @@ void __queue_half(struct queue* ths)
  * @brief 큐의 크기를 2의 제곱수로 교정
  * @param ths 대상 큐 포인터
  */
-void __queue_capacity_correction(struct queue* ths)
+void __unds_queue_capacity_correction(unds_queue_t* ths)
 {
     size_t correct_capacity = 1;
 
     while (correct_capacity <= ths->size + 1)
         correct_capacity *= 2;
 
-    ths->arr = realloc_s(ths->arr, correct_capacity * ths->of_size);
+    ths->arr = unds_realloc(ths->arr, correct_capacity * ths->of_size);
     if (ths->arr == NULL)
     {
         fprintf(stderr, "stderr: Failed to reallocate memory for queue in __queue_capacity_correction().\n");
@@ -125,11 +136,11 @@ void __queue_capacity_correction(struct queue* ths)
  * @param of_size 큐에 저장할 단일 요소의 크기
  * @return 동적으로 생성된 큐의 주소
  */
-struct queue* queue_create(size_t of_size)
+unds_queue_t* unds_queue_create(size_t of_size)
 {
-    struct queue* ths = (struct queue*)malloc_s(sizeof(struct queue));
+    unds_queue_t* ths = (unds_queue_t*)unds_malloc(sizeof(unds_queue_t));
 
-    ths->arr = malloc_s(of_size);
+    ths->arr = unds_malloc(of_size);
     if (ths->arr == NULL)
     {
         fprintf(stderr, "stderr: Failed to allocate memory for queue in queue_create().\n");
@@ -152,7 +163,7 @@ struct queue* queue_create(size_t of_size)
  * @param of_size 큐로 생성할 배열의 단일 요소의 크기
  * @return 동적으로 생성된 큐의 주소
  */
-struct queue* queue_create_from_array(void* arr, size_t size, size_t of_size)
+unds_queue_t* unds_queue_create_from_array(void* arr, size_t size, size_t of_size)
 {
     if (arr == NULL)
     {
@@ -165,9 +176,9 @@ struct queue* queue_create_from_array(void* arr, size_t size, size_t of_size)
         abort();
     }
 
-    struct queue* ths = (struct queue*)malloc_s(sizeof(struct queue));
+    unds_queue_t* ths = (unds_queue_t*)unds_malloc(sizeof(unds_queue_t));
 
-    ths->arr = malloc_s(size * of_size);
+    ths->arr = unds_malloc(size * of_size);
     if (ths->arr == NULL)
     {
         fprintf(stderr, "stderr: Failed to allocate memory for queue in queue_create_from_array().\n");
@@ -181,7 +192,7 @@ struct queue* queue_create_from_array(void* arr, size_t size, size_t of_size)
     ths->tail = size;
 
     memcpy(ths->arr, arr, size * of_size);
-    __queue_capacity_correction(ths);
+    __unds_queue_capacity_correction(ths);
 
     return ths;
 }
@@ -193,7 +204,7 @@ struct queue* queue_create_from_array(void* arr, size_t size, size_t of_size)
  * @param of_size 큐의 기본값으로 설정할 값의 크기
  * @return 동적으로 생성된 큐의 주소
  */
-struct queue* queue_create_from_value(void* value, size_t size, size_t of_size)
+unds_queue_t* unds_queue_create_from_value(void* value, size_t size, size_t of_size)
 {
     if (value == NULL)
     {
@@ -206,8 +217,8 @@ struct queue* queue_create_from_value(void* value, size_t size, size_t of_size)
         abort();
     }
 
-    struct queue* ths = (struct queue*)malloc_s(sizeof(struct queue));
-    ths->arr = malloc_s(size * of_size);
+    unds_queue_t* ths = (unds_queue_t*)unds_malloc(sizeof(unds_queue_t));
+    ths->arr = unds_malloc(size * of_size);
     if (ths->arr == NULL)
     {
         fprintf(stderr, "stderr: Failed to allocate memory for queue in queue_create_from_array().\n");
@@ -222,7 +233,7 @@ struct queue* queue_create_from_value(void* value, size_t size, size_t of_size)
 
     for (size_t i = 0; i < size; i++)
         memcpy((char*)ths->arr + i * of_size, value, of_size);
-    __queue_capacity_correction(ths);
+    __unds_queue_capacity_correction(ths);
     
     return ths;
 }
@@ -231,10 +242,10 @@ struct queue* queue_create_from_value(void* value, size_t size, size_t of_size)
  * @brief 큐 삭제
  * @param ths 대상 큐 포인터
  */
-void queue_delete(struct queue* ths)
+void unds_queue_delete(unds_queue_t* ths)
 {
-    free_s(ths->arr);
-    free_s(ths);
+    unds_free(ths->arr);
+    unds_free(ths);
 }
 
 /**
@@ -242,7 +253,7 @@ void queue_delete(struct queue* ths)
  * @param ths 대상 큐 포인터
  * @return 큐 빔 여부
  */
-bool queue_empty(struct queue* ths)
+bool unds_queue_empty(unds_queue_t* ths)
 {
     return ths->size == 0;
 }
@@ -252,10 +263,10 @@ bool queue_empty(struct queue* ths)
  * @param ths 대상 큐 포인터
  * @param value 삽입할 대상을 가리키는 포인터
  */
-void queue_push(struct queue* ths, void* value)
+void unds_queue_push(unds_queue_t* ths, void* value)
 {
     if (ths->size + 1 == ths->capacity)
-        __queue_double(ths);
+        __unds_queue_double(ths);
 
     memcpy((char*)ths->arr + ths->tail * ths->of_size, value, ths->of_size);
 
@@ -269,9 +280,9 @@ void queue_push(struct queue* ths, void* value)
  * @brief 큐의 첫 요소를 삭제
  * @param ths 대상 큐 포인터
  */
-void queue_pop(struct queue* ths)
+void unds_queue_pop(unds_queue_t* ths)
 {
-    if (queue_empty(ths))
+    if (unds_queue_empty(ths))
     {
         fprintf(stderr, "stderr: Failed to pop an element from queue because the queue is empty.\n");
         abort();
@@ -283,7 +294,7 @@ void queue_pop(struct queue* ths)
     ths->size--;
 
     if (ths->size + 1 == ths->capacity / 2)
-        __queue_half(ths);
+        __unds_queue_half(ths);
 }
 
 /**
@@ -291,9 +302,9 @@ void queue_pop(struct queue* ths)
  * @param ths 대상 큐 포인터
  * @param dest 요소를 복사할 목적지
  */
-void queue_front(struct queue* ths, void* dest)
+void unds_queue_front(unds_queue_t* ths, void* dest)
 {
-    if (queue_empty(ths))
+    if (unds_queue_empty(ths))
     {
         fprintf(stderr, "stderr: Failed to read from the front of the queue because the queue is empty.\n");
         abort();
@@ -307,9 +318,9 @@ void queue_front(struct queue* ths, void* dest)
  * @param ths 대상 큐 포인터
  * @param dest 요소를 복사할 목적지
  */
-void queue_back(struct queue* ths, void* dest)
+void unds_queue_back(unds_queue_t* ths, void* dest)
 {
-    if (queue_empty(ths))
+    if (unds_queue_empty(ths))
     {
         fprintf(stderr, "stderr: Failed to read from the back of the queue because the queue is empty.\n");
         abort();
@@ -322,9 +333,9 @@ void queue_back(struct queue* ths, void* dest)
  * @brief 큐 초기화
  * @param ths 대상 큐 포인터
  */
-void queue_clear(struct queue* ths)
+void unds_queue_clear(unds_queue_t* ths)
 {
-    ths->arr = realloc_s(ths->arr, ths->of_size);
+    ths->arr = unds_realloc(ths->arr, ths->of_size);
     if (ths->arr == NULL)
     {
         fprintf(stderr, "stderr: Failed to reallocate memory for stack in queue_clear().\n");
