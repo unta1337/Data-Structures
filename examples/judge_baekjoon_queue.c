@@ -7,15 +7,16 @@
 #include <string.h>
 
 // 참고, 아래의 include 경로는 본 리포지토리에 한하므로 실제 백준 제출 시에는 헤더 파일을 직접 삽입했다.
-#include "../queue.h"
+#define UNDS_TRACK_MEM
+#include "../unds_queue.h"
 
 int N;
 char input[20];
-struct queue* q;
+unds_queue_t* q;
 
 int main(void)
 {
-    q = queue_create(sizeof(int));
+    q = unds_queue_create(sizeof(int));
 
     scanf("%d\n", &N);
     for (int i = 0; i < N; i++)
@@ -30,18 +31,18 @@ int main(void)
         {
             char* operand = strtok(NULL, " ");
             temp = strtol(operand, NULL, 10);
-            queue_push(q, &temp);
+            unds_queue_push(q, &temp);
         }
         else if (!strcmp(cmd, "pop"))
         {
-            if (queue_empty(q))
+            if (unds_queue_empty(q))
             {
                 printf("-1\n");
                 continue;
             }
 
-            queue_front(q, &temp);
-            queue_pop(q);
+            unds_queue_front(q, &temp);
+            unds_queue_pop(q);
             printf("%d\n", temp);
         }
         else if (!strcmp(cmd, "size"))
@@ -50,35 +51,35 @@ int main(void)
         }
         else if (!strcmp(cmd, "empty"))
         {
-            printf("%d\n", queue_empty(q));
+            printf("%d\n", unds_queue_empty(q));
         }
         else if (!strcmp(cmd, "front"))
         {
-            if (queue_empty(q))
+            if (unds_queue_empty(q))
             {
                 printf("-1\n");
                 continue;
             }
 
-            queue_front(q, &temp);
+            unds_queue_front(q, &temp);
             printf("%d\n", temp);
         }
         else if (!strcmp(cmd, "back"))
         {
-            if (queue_empty(q))
+            if (unds_queue_empty(q))
             {
                 printf("-1\n");
                 continue;
             }
 
-            queue_back(q, &temp);
+            unds_queue_back(q, &temp);
             printf("%d\n", temp);
         }
     }
 
-    queue_delete(q);
+    unds_queue_delete(q);
 
-    printf("\nCurrent Memory Usage (should be 0): %zu.\n", used_malloc);
+    printf("\nCurrent Memory Usage (should be 0): %zu.\n", unds_used_malloc);
 
     return 0;
 }

@@ -2,7 +2,8 @@
 #include <stdlib.h>
 #include <time.h>
 
-#include "../heap_queue.h"
+#define UNDS_TRACK_MEM
+#include "../unds_heap_queue.h"
 
 #define NUM_ARR (1 << 8)
 
@@ -35,13 +36,13 @@ int main(void)
         printf("%d ", arr[i]);
     printf("\n");
 
-    struct heap_queue* hq = heap_queue_create_from_array(arr, NUM_ARR, sizeof(int), comp);
+    unds_heap_queue_t* hq = unds_heap_queue_create_from_array(arr, NUM_ARR, sizeof(int), comp);
 
     int index = 0;
     while (hq->size > 0)
     {
-        heap_queue_front(hq, &arr[index++]);
-        heap_queue_pop(hq);
+        unds_heap_queue_front(hq, &arr[index++]);
+        unds_heap_queue_pop(hq);
     }
 
     printf("Sorted Array:\n");
@@ -51,9 +52,9 @@ int main(void)
 
     printf("%s.\n", is_sorted(arr, NUM_ARR) ? "Sorted" : "Unsorted");
 
-    heap_queue_delete(hq);
+    unds_heap_queue_delete(hq);
 
-    printf("\nCurrent Memory Usage (should be 0): %zu.\n", used_malloc);
+    printf("\nCurrent Memory Usage (should be 0): %zu.\n", unds_used_malloc);
 
     return 0;
 }

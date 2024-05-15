@@ -6,7 +6,7 @@
 #include <string.h>
 
 #ifdef UNDS_TRACK_MEM
-#include "utils/memory.h"
+#include "unds_memory.h"
 #else
 #include <stdlib.h>
 #define unds_malloc malloc

@@ -204,7 +204,7 @@ unds_deque_t* unds_deque_create_from_array(void* arr, size_t size, size_t of_siz
  * @param of_size 덱의 기본값으로 설정할 값의 크기
  * @return 동적으로 생성된 덱의 주소
  */
-unds_deque_t* deque_create_from_value(void* value, size_t size, size_t of_size)
+unds_deque_t* unds_deque_create_from_value(void* value, size_t size, size_t of_size)
 {
     if (value == NULL)
     {
@@ -242,7 +242,7 @@ unds_deque_t* deque_create_from_value(void* value, size_t size, size_t of_size)
  * @brief 덱 삭제
  * @param ths 대상 덱 포인터
  */
-void deque_delete(unds_deque_t* ths)
+void unds_deque_delete(unds_deque_t* ths)
 {
     unds_free(ths->arr);
     unds_free(ths);
@@ -253,7 +253,7 @@ void deque_delete(unds_deque_t* ths)
  * @param ths 대상 덱 포인터
  * @return 덱 빔 여부
  */
-bool deque_empty(unds_deque_t* ths)
+bool unds_deque_empty(unds_deque_t* ths)
 {
     return ths->size == 0;
 }
@@ -263,7 +263,7 @@ bool deque_empty(unds_deque_t* ths)
  * @param ths 대상 덱 포인터
  * @param value 삽입할 대상을 가리키는 포인터
  */
-void deque_push_front(unds_deque_t* ths, void* value)
+void unds_deque_push_front(unds_deque_t* ths, void* value)
 {
     if (ths->size + 1 == ths->capacity)
         __unds_deque_double(ths);
@@ -281,7 +281,7 @@ void deque_push_front(unds_deque_t* ths, void* value)
  * @param ths 대상 덱 포인터
  * @param value 삽입할 대상을 가리키는 포인터
  */
-void deque_push_back(unds_deque_t* ths, void* value)
+void unds_deque_push_back(unds_deque_t* ths, void* value)
 {
     if (ths->size + 1 == ths->capacity)
         __unds_deque_double(ths);
@@ -298,9 +298,9 @@ void deque_push_back(unds_deque_t* ths, void* value)
  * @brief 덱의 마지막 요소를 삭제
  * @param ths 대상 덱 포인터
  */
-void deque_pop_front(unds_deque_t* ths)
+void unds_deque_pop_front(unds_deque_t* ths)
 {
-    if (deque_empty(ths))
+    if (unds_deque_empty(ths))
     {
         fprintf(stderr, "stderr: Failed to pop an element from deque because the deque is empty.\n");
         abort();
@@ -319,9 +319,9 @@ void deque_pop_front(unds_deque_t* ths)
  * @brief 덱의 마지막 요소를 삭제
  * @param ths 대상 덱 포인터
  */
-void deque_pop_back(unds_deque_t* ths)
+void unds_deque_pop_back(unds_deque_t* ths)
 {
-    if (deque_empty(ths))
+    if (unds_deque_empty(ths))
     {
         fprintf(stderr, "stderr: Failed to pop an element from deque because the deque is empty.\n");
         abort();
@@ -341,9 +341,9 @@ void deque_pop_back(unds_deque_t* ths)
  * @param ths 대상 덱 포인터
  * @param dest 요소를 복사할 목적지
  */
-void deque_front(unds_deque_t* ths, void* dest)
+void unds_deque_front(unds_deque_t* ths, void* dest)
 {
-    if (deque_empty(ths))
+    if (unds_deque_empty(ths))
     {
         fprintf(stderr, "stderr: Failed to read from the front of the deque because the deque is empty.\n");
         abort();
@@ -357,9 +357,9 @@ void deque_front(unds_deque_t* ths, void* dest)
  * @param ths 대상 덱 포인터
  * @param dest 요소를 복사할 목적지
  */
-void deque_back(unds_deque_t* ths, void* dest)
+void unds_deque_back(unds_deque_t* ths, void* dest)
 {
-    if (deque_empty(ths))
+    if (unds_deque_empty(ths))
     {
         fprintf(stderr, "stderr: Failed to read from the back of the deque because the deque is empty.\n");
         abort();
@@ -374,7 +374,7 @@ void deque_back(unds_deque_t* ths, void* dest)
  * @brief 덱 초기화
  * @param ths 대상 덱 포인터
  */
-void deque_clear(unds_deque_t* ths)
+void unds_deque_clear(unds_deque_t* ths)
 {
     ths->arr = unds_realloc(ths->arr, ths->of_size);
     if (ths->arr == NULL)

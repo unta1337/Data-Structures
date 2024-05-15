@@ -1,7 +1,8 @@
 #include <stdio.h>
 #include <limits.h>
 
-#include "../heap_queue.h"
+#define UNDS_TRACK_MEM
+#include "../unds_heap_queue.h"
 
 #define INF INT_MAX / 4
 
@@ -32,17 +33,17 @@ int dijkstra(int start)
     for (int i = 0; i < NUM_V; i++) dist[i] = INF;
     dist[start] = 0;
 
-    struct heap_queue* hq = heap_queue_create(2 * sizeof(int), comp);
-    heap_queue_push(hq, (int[]){ start, 0 });
+    unds_heap_queue_t* hq = unds_heap_queue_create(2 * sizeof(int), comp);
+    unds_heap_queue_push(hq, (int[]){ start, 0 });
 
     int path[NUM_V];
     for (int i = 0; i < NUM_V; i++) path[i] = start;
 
-    while (!heap_queue_empty(hq))
+    while (!unds_heap_queue_empty(hq))
     {
         int temp[2];
-        heap_queue_front(hq, temp);
-        heap_queue_pop(hq);
+        unds_heap_queue_front(hq, temp);
+        unds_heap_queue_pop(hq);
 
         int vertex = temp[0];
         int cost = temp[1];
@@ -60,7 +61,7 @@ int dijkstra(int start)
                 dist[i] = dist[vertex] + weights[vertex][i];
                 path[i] = vertex;
 
-                heap_queue_push(hq, (int[]){ i, dist[i] });
+                unds_heap_queue_push(hq, (int[]){ i, dist[i] });
             }
         }
     }
@@ -83,7 +84,7 @@ int dijkstra(int start)
     }
     printf("\n");
 
-    heap_queue_delete(hq);
+    unds_heap_queue_delete(hq);
 
     return 0;
 }
@@ -93,7 +94,7 @@ int main(void)
     for (int i = 0; i < NUM_V; i++)
         dijkstra(i);
 
-    printf("\nCurrent Memory Usage (should be 0): %zu.\n", used_malloc);
+    printf("\nCurrent Memory Usage (should be 0): %zu.\n", unds_used_malloc);
 
     return 0;
 }
