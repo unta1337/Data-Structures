@@ -4,7 +4,8 @@
 
 #include <stdio.h>
 
-#include "../heap_queue.h"
+#define UNDS_TRACK_MEM
+#include "../unds_heap_queue.h"
 
 int comp(const void* p, const void* q)
 {
@@ -15,11 +16,11 @@ int comp(const void* p, const void* q)
 }
 
 int N, input;
-struct heap_queue* hq;
+unds_heap_queue_t* hq;
 
 int main(void)
 {
-    hq = heap_queue_create(sizeof(int), comp);
+    hq = unds_heap_queue_create(sizeof(int), comp);
 
     scanf("%d", &N);
     for (int i = 0; i < N; i++)
@@ -27,25 +28,25 @@ int main(void)
         scanf("%d", &input);
 
         if (input)
-            heap_queue_push(hq, &input);
+            unds_heap_queue_push(hq, &input);
         else
         {
-            if (heap_queue_empty(hq))
+            if (unds_heap_queue_empty(hq))
             {
                 printf("0\n");
                 continue;
             }
 
             int temp;
-            heap_queue_front(hq, &temp);
-            heap_queue_pop(hq);
+            unds_heap_queue_front(hq, &temp);
+            unds_heap_queue_pop(hq);
             printf("%d\n", temp);
         }
     }
 
-    heap_queue_delete(hq);
+    unds_heap_queue_delete(hq);
 
-    printf("\nCurrent Memory Usage (should be 0): %zu.\n", used_malloc);
+    printf("\nCurrent Memory Usage (should be 0): %zu.\n", unds_used_malloc);
 
     return 0;
 }

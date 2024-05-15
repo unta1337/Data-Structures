@@ -2,15 +2,16 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "../stack.h"
+#define UNDS_TRACK_MEM
+#include "../unds_stack.h"
 
 int N;
 char input[20];
-struct stack* stk;
+unds_stack_t* stk;
 
 int main(void)
 {
-    stk = stack_create(sizeof(int));
+    stk = unds_stack_create(sizeof(int));
 
     scanf("%d\n", &N);
     for (int i = 0; i < N; i++)
@@ -25,18 +26,18 @@ int main(void)
         {
             char* operand = strtok(NULL, " ");
             temp = strtol(operand, NULL, 10);
-            stack_push(stk, &temp);
+            unds_stack_push(stk, &temp);
         }
         else if (!strcmp(cmd, "pop"))
         {
-            if (stack_empty(stk))
+            if (unds_stack_empty(stk))
             {
                 printf("-1\n");
                 continue;
             }
 
-            stack_top(stk, &temp);
-            stack_pop(stk);
+            unds_stack_top(stk, &temp);
+            unds_stack_pop(stk);
             printf("%d\n", temp);
         }
         else if (!strcmp(cmd, "size"))
@@ -45,24 +46,24 @@ int main(void)
         }
         else if (!strcmp(cmd, "empty"))
         {
-            printf("%d\n", stack_empty(stk));
+            printf("%d\n", unds_stack_empty(stk));
         }
         else if (!strcmp(cmd, "top"))
         {
-            if (stack_empty(stk))
+            if (unds_stack_empty(stk))
             {
                 printf("-1\n");
                 continue;
             }
 
-            stack_top(stk, &temp);
+            unds_stack_top(stk, &temp);
             printf("%d\n", temp);
         }
     }
 
-    stack_delete(stk);
+    unds_stack_delete(stk);
 
-    printf("\nCurrent Memory Usage (should be 0): %zu.\n", used_malloc);
+    printf("\nCurrent Memory Usage (should be 0): %zu.\n", unds_used_malloc);
 
     return 0;
 }

@@ -1,15 +1,24 @@
-#ifndef __DEQUE_H
-#define __DEQUE_H
+#ifndef __UNDS_DEQUE_H
+#define __UNDS_DEQUE_H
 
 #include <stdio.h>
 #include <stdbool.h>
+#include <string.h>
 
-#include "utils/memory.h"
+#ifdef UNDS_TRACK_MEM
+#include "unds_memory.h"
+#else
+#include <stdlib.h>
+#define unds_malloc malloc
+#define unds_calloc calloc
+#define unds_realloc realloc
+#define unds_free free
+#endif
 
 /**
  * 배열을 기반으로 구현된 가변 크기 덱
  */
-struct deque
+struct unds_deque_t
 {
     /**
      * 실제 데이터를 저장할 공간에 대한 포인터
@@ -37,19 +46,21 @@ struct deque
     size_t tail;
 };
 
+typedef struct unds_deque_t unds_deque_t;
+
 /**
  * *내부 함수
  * 
  * @brief 덱 크기 2배 증가
  * @param ths 대상 덱 포인터
  */
-void __deque_double(struct deque* ths)
+void __unds_deque_double(unds_deque_t* ths)
 {
     ths->capacity *= 2;
-    ths->arr = realloc_s(ths->arr, ths->capacity * ths->of_size);
+    ths->arr = unds_realloc(ths->arr, ths->capacity * ths->of_size);
     if (ths->arr == NULL)
     {
-        fprintf(stderr, "stderr: Failed to reallocate memory for deque in __deque_double().\n");
+        fprintf(stderr, "stderr: Failed to reallocate memory for deque in __unds_deque_double().\n");
         abort();
     }
 
@@ -69,7 +80,7 @@ void __deque_double(struct deque* ths)
  * @brief 덱 크기 2배 감소
  * @param ths 대상 덱 포인터
  */
-void __deque_half(struct deque* ths)
+void __unds_deque_half(unds_deque_t* ths)
 {
     if (ths->size == 0)
         return;
@@ -86,10 +97,10 @@ void __deque_half(struct deque* ths)
     }
 
     ths->capacity /= 2;
-    ths->arr = realloc_s(ths->arr, ths->capacity * ths->of_size);
+    ths->arr = unds_realloc(ths->arr, ths->capacity * ths->of_size);
     if (ths->arr == NULL)
     {
-        fprintf(stderr, "stderr: Failed to reallocate memory for deque in __deque_half().\n");
+        fprintf(stderr, "stderr: Failed to reallocate memory for deque in __unds_deque_half().\n");
         abort();
     }
 
@@ -103,17 +114,17 @@ void __deque_half(struct deque* ths)
  * @brief 덱의 크기를 2의 제곱수로 교정
  * @param ths 대상 덱 포인터
  */
-void __deque_capacity_correction(struct deque* ths)
+void __unds_deque_capacity_correction(unds_deque_t* ths)
 {
     size_t correct_capacity = 1;
 
     while (correct_capacity <= ths->size + 1)
         correct_capacity *= 2;
 
-    ths->arr = realloc_s(ths->arr, correct_capacity * ths->of_size);
+    ths->arr = unds_realloc(ths->arr, correct_capacity * ths->of_size);
     if (ths->arr == NULL)
     {
-        fprintf(stderr, "stderr: Failed to reallocate memory for deque in __deque_capacity_correction().\n");
+        fprintf(stderr, "stderr: Failed to reallocate memory for deque in __unds_deque_capacity_correction().\n");
         abort();
     }
 
@@ -125,14 +136,14 @@ void __deque_capacity_correction(struct deque* ths)
  * @param of_size 덱에 저장할 단일 요소의 크기
  * @return 동적으로 생성된 덱의 주소
  */
-struct deque* deque_create(size_t of_size)
+unds_deque_t* unds_deque_create(size_t of_size)
 {
-    struct deque* ths = (struct deque*)malloc_s(sizeof(struct deque));
+    unds_deque_t* ths = (unds_deque_t*)unds_malloc(sizeof(unds_deque_t));
 
-    ths->arr = malloc_s(of_size);
+    ths->arr = unds_malloc(of_size);
     if (ths->arr == NULL)
     {
-        fprintf(stderr, "stderr: Failed to allocate memory for deque in deque_create().\n");
+        fprintf(stderr, "stderr: Failed to allocate memory for deque in unds_deque_create().\n");
         abort();
     }
 
@@ -152,7 +163,7 @@ struct deque* deque_create(size_t of_size)
  * @param of_size 덱으로 생성할 배열의 단일 요소의 크기
  * @return 동적으로 생성된 덱의 주소
  */
-struct deque* deque_create_from_array(void* arr, size_t size, size_t of_size)
+unds_deque_t* unds_deque_create_from_array(void* arr, size_t size, size_t of_size)
 {
     if (arr == NULL)
     {
@@ -165,12 +176,12 @@ struct deque* deque_create_from_array(void* arr, size_t size, size_t of_size)
         abort();
     }
 
-    struct deque* ths = (struct deque*)malloc_s(sizeof(struct deque));
+    unds_deque_t* ths = (unds_deque_t*)unds_malloc(sizeof(unds_deque_t));
 
-    ths->arr = malloc_s(size * of_size);
+    ths->arr = unds_malloc(size * of_size);
     if (ths->arr == NULL)
     {
-        fprintf(stderr, "stderr: Failed to allocate memory for deque in deque_create_from_array().\n");
+        fprintf(stderr, "stderr: Failed to allocate memory for deque in unds_deque_create_from_array().\n");
         abort();
     }
 
@@ -181,7 +192,7 @@ struct deque* deque_create_from_array(void* arr, size_t size, size_t of_size)
     ths->tail = size;
 
     memcpy(ths->arr, arr, size * of_size);
-    __deque_capacity_correction(ths);
+    __unds_deque_capacity_correction(ths);
 
     return ths;
 }
@@ -193,7 +204,7 @@ struct deque* deque_create_from_array(void* arr, size_t size, size_t of_size)
  * @param of_size 덱의 기본값으로 설정할 값의 크기
  * @return 동적으로 생성된 덱의 주소
  */
-struct deque* deque_create_from_value(void* value, size_t size, size_t of_size)
+unds_deque_t* unds_deque_create_from_value(void* value, size_t size, size_t of_size)
 {
     if (value == NULL)
     {
@@ -206,11 +217,11 @@ struct deque* deque_create_from_value(void* value, size_t size, size_t of_size)
         abort();
     }
 
-    struct deque* ths = (struct deque*)malloc_s(sizeof(struct deque));
-    ths->arr = malloc_s(size * of_size);
+    unds_deque_t* ths = (unds_deque_t*)unds_malloc(sizeof(unds_deque_t));
+    ths->arr = unds_malloc(size * of_size);
     if (ths->arr == NULL)
     {
-        fprintf(stderr, "stderr: Failed to allocate memory for deque in deque_create_from_array().\n");
+        fprintf(stderr, "stderr: Failed to allocate memory for deque in unds_deque_create_from_array().\n");
         abort();
     }
 
@@ -222,7 +233,7 @@ struct deque* deque_create_from_value(void* value, size_t size, size_t of_size)
 
     for (size_t i = 0; i < size; i++)
         memcpy((char*)ths->arr + i * of_size, value, of_size);
-    __deque_capacity_correction(ths);
+    __unds_deque_capacity_correction(ths);
     
     return ths;
 }
@@ -231,10 +242,10 @@ struct deque* deque_create_from_value(void* value, size_t size, size_t of_size)
  * @brief 덱 삭제
  * @param ths 대상 덱 포인터
  */
-void deque_delete(struct deque* ths)
+void unds_deque_delete(unds_deque_t* ths)
 {
-    free_s(ths->arr);
-    free_s(ths);
+    unds_free(ths->arr);
+    unds_free(ths);
 }
 
 /**
@@ -242,7 +253,7 @@ void deque_delete(struct deque* ths)
  * @param ths 대상 덱 포인터
  * @return 덱 빔 여부
  */
-bool deque_empty(struct deque* ths)
+bool unds_deque_empty(unds_deque_t* ths)
 {
     return ths->size == 0;
 }
@@ -252,10 +263,10 @@ bool deque_empty(struct deque* ths)
  * @param ths 대상 덱 포인터
  * @param value 삽입할 대상을 가리키는 포인터
  */
-void deque_push_front(struct deque* ths, void* value)
+void unds_deque_push_front(unds_deque_t* ths, void* value)
 {
     if (ths->size + 1 == ths->capacity)
-        __deque_double(ths);
+        __unds_deque_double(ths);
 
     ths->head += ths->capacity - 1;
     ths->head %= ths->capacity;
@@ -270,10 +281,10 @@ void deque_push_front(struct deque* ths, void* value)
  * @param ths 대상 덱 포인터
  * @param value 삽입할 대상을 가리키는 포인터
  */
-void deque_push_back(struct deque* ths, void* value)
+void unds_deque_push_back(unds_deque_t* ths, void* value)
 {
     if (ths->size + 1 == ths->capacity)
-        __deque_double(ths);
+        __unds_deque_double(ths);
 
     memcpy((char*)ths->arr + ths->tail * ths->of_size, value, ths->of_size);
 
@@ -287,9 +298,9 @@ void deque_push_back(struct deque* ths, void* value)
  * @brief 덱의 마지막 요소를 삭제
  * @param ths 대상 덱 포인터
  */
-void deque_pop_front(struct deque* ths)
+void unds_deque_pop_front(unds_deque_t* ths)
 {
-    if (deque_empty(ths))
+    if (unds_deque_empty(ths))
     {
         fprintf(stderr, "stderr: Failed to pop an element from deque because the deque is empty.\n");
         abort();
@@ -301,16 +312,16 @@ void deque_pop_front(struct deque* ths)
     ths->size--;
 
     if (ths->size + 1 == ths->capacity / 2)
-        __deque_half(ths);
+        __unds_deque_half(ths);
 }
 
 /**
  * @brief 덱의 마지막 요소를 삭제
  * @param ths 대상 덱 포인터
  */
-void deque_pop_back(struct deque* ths)
+void unds_deque_pop_back(unds_deque_t* ths)
 {
-    if (deque_empty(ths))
+    if (unds_deque_empty(ths))
     {
         fprintf(stderr, "stderr: Failed to pop an element from deque because the deque is empty.\n");
         abort();
@@ -322,7 +333,7 @@ void deque_pop_back(struct deque* ths)
     ths->size--;
 
     if (ths->size + 1 == ths->capacity / 2)
-        __deque_half(ths);
+        __unds_deque_half(ths);
 }
 
 /**
@@ -330,9 +341,9 @@ void deque_pop_back(struct deque* ths)
  * @param ths 대상 덱 포인터
  * @param dest 요소를 복사할 목적지
  */
-void deque_front(struct deque* ths, void* dest)
+void unds_deque_front(unds_deque_t* ths, void* dest)
 {
-    if (deque_empty(ths))
+    if (unds_deque_empty(ths))
     {
         fprintf(stderr, "stderr: Failed to read from the front of the deque because the deque is empty.\n");
         abort();
@@ -346,9 +357,9 @@ void deque_front(struct deque* ths, void* dest)
  * @param ths 대상 덱 포인터
  * @param dest 요소를 복사할 목적지
  */
-void deque_back(struct deque* ths, void* dest)
+void unds_deque_back(unds_deque_t* ths, void* dest)
 {
-    if (deque_empty(ths))
+    if (unds_deque_empty(ths))
     {
         fprintf(stderr, "stderr: Failed to read from the back of the deque because the deque is empty.\n");
         abort();
@@ -363,9 +374,9 @@ void deque_back(struct deque* ths, void* dest)
  * @brief 덱 초기화
  * @param ths 대상 덱 포인터
  */
-void deque_clear(struct deque* ths)
+void unds_deque_clear(unds_deque_t* ths)
 {
-    ths->arr = realloc_s(ths->arr, ths->of_size);
+    ths->arr = unds_realloc(ths->arr, ths->of_size);
     if (ths->arr == NULL)
     {
         fprintf(stderr, "stderr: Failed to reallocate memory for stack in deque_clear().\n");
