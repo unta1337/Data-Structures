@@ -4,6 +4,7 @@
 
 #define UNDS_TRACK_MEM
 #define UNDS_IMPLEMENTATION
+#define UNDS_MEMORY_IMPLEMENTATION
 #include "../unds.h"
 
 #define NUM_ARR (1 << 8)

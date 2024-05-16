@@ -13,13 +13,35 @@
 /**
  * 현재까지 동적할당된 메모리의 총량
  */
-size_t unds_used_malloc = 0;
+extern size_t unds_used_malloc;
 
 /**
  * @brief 메모리 사용량을 추적하는 malloc
  * @param size 할당 받을 메모리의 크기
  * @return 동적할당된 포인터
  */
+void* unds_malloc(size_t size);
+
+/**
+ * @brief 메모리 사용량을 추적하는 calloc
+ * @param n 할당 받을 요소의 개수
+ * @param of_size 할당 받을 단일 요소의 크기
+ * @return 동적할당된 포인터
+ */
+void* unds_calloc(size_t n, size_t of_size);
+
+/**
+ * @brief 메모리 사용량을 추적하는 realloc
+ * @param ptr 재할당 받을 포인터
+ * @param size 할당 받을 메모리의 크기
+ * @return 동적할당된 포인터
+ */
+void* unds_realloc(void* ptr, size_t size);
+
+#ifdef UNDS_MEMORY_IMPLEMENTATION
+
+size_t unds_used_malloc = 0;
+
 void* unds_malloc(size_t size)
 {
     void* buffer = malloc(size + sizeof(size_t));
@@ -34,12 +56,6 @@ void* unds_malloc(size_t size)
     return (char*)buffer + sizeof(size_t);
 }
 
-/**
- * @brief 메모리 사용량을 추적하는 calloc
- * @param n 할당 받을 요소의 개수
- * @param of_size 할당 받을 단일 요소의 크기
- * @return 동적할당된 포인터
- */
 void* unds_calloc(size_t n, size_t of_size)
 {
     void* buffer = malloc(n * of_size + sizeof(size_t));
@@ -56,12 +72,6 @@ void* unds_calloc(size_t n, size_t of_size)
     return (char*)buffer + sizeof(size_t);
 }
 
-/**
- * @brief 메모리 사용량을 추적하는 realloc
- * @param ptr 재할당 받을 포인터
- * @param size 할당 받을 메모리의 크기
- * @return 동적할당된 포인터
- */
 void* unds_realloc(void* ptr, size_t size)
 {
     void* buffer = (char*)ptr - sizeof(size_t);
@@ -81,10 +91,6 @@ void* unds_realloc(void* ptr, size_t size)
     return (char*)buffer + sizeof(size_t);
 }
 
-/**
- * @brief 메모리 사용량을 추적하는 free
- * @param ptr 반납할 포인터
- */
 void unds_free(void* ptr)
 {
     if (ptr == NULL)
@@ -97,5 +103,7 @@ void unds_free(void* ptr)
 
     free(buffer);
 }
+
+#endif
 
 #endif

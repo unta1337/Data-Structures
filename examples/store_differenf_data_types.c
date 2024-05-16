@@ -1,5 +1,6 @@
 #include <stdio.h>
 
+#define UNDS_MEMORY_IMPLEMENTATION
 #include "../unds_memory.h"
 
 #define UNDS_TRACK_MEM

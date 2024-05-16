@@ -3,6 +3,7 @@
 
 #define UNDS_TRACK_MEM
 #define UNDS_IMPLEMENTATION
+#define UNDS_MEMORY_IMPLEMENTATION
 #include "../unds.h"
 
 // 문자열을 일차적으로 해싱한 후 이를 다시 해싱.
