@@ -1,9 +1,11 @@
 #include <stdio.h>
 
+#define UNDS_MEMORY_IMPLEMENTATION
 #include "../unds_memory.h"
 
 #define UNDS_TRACK_MEM
-#include "../unds_list.h"
+#define UNDS_IMPLEMENTATION
+#include "../unds.h"
 
 int main(void)
 {

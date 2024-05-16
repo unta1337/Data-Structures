@@ -5,7 +5,9 @@
 #include <stdio.h>
 
 #define UNDS_TRACK_MEM
-#include "../unds_heap_queue.h"
+#define UNDS_IMPLEMENTATION
+#define UNDS_MEMORY_IMPLEMENTATION
+#include "../unds.h"
 
 int comp(const void* p, const void* q)
 {

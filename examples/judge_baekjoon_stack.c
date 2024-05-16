@@ -3,7 +3,9 @@
 #include <string.h>
 
 #define UNDS_TRACK_MEM
-#include "../unds_stack.h"
+#define UNDS_IMPLEMENTATION
+#define UNDS_MEMORY_IMPLEMENTATION
+#include "../unds.h"
 
 int N;
 char input[20];
