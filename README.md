@@ -30,6 +30,54 @@
     * [ ] 셋  
     * [x] 해시셋  
 
+## Quick Start
+수동으로 다운로드 또는 클론하여 사용할 수 있다.  
+
+또는 단일 헤더 파일이므로 프로젝트 폴더 내부에서,
+```bash
+$ wget https://raw.githubusercontent.com/unta1337/Data-Structures/master/unds.h
+```
+으로 직접 소스를 받아 사용할 수 있다.  
+
+```c
+#include <stdio.h>
+#include <stdint.h>
+
+#define UNDS_IMPLEMENTATION
+#include "unds.h"
+
+int main(void) {
+    unds_list_t* list = unds_list_create(sizeof(uint32_t));
+
+    unds_list_push(list, (uint32_t[]){ 0x0076654e });
+    unds_list_push(list, (uint32_t[]){ 0x00207265 });
+    unds_list_push(list, (uint32_t[]){ 0x006e6f67 });
+    unds_list_push(list, (uint32_t[]){ 0x0020616e });
+    unds_list_push(list, (uint32_t[]){ 0x00766967 });
+    unds_list_push(list, (uint32_t[]){ 0x00792065 });
+    unds_list_push(list, (uint32_t[]){ 0x0020756f });
+    unds_list_push(list, (uint32_t[]){ 0x00007075 });
+
+    for (size_t i = 0; i < list->size; i++) {
+        uint32_t elem = 0;
+        unds_list_get(list, &elem, i);
+
+        printf("%s", (char*)&elem);
+    }
+    printf("\n");
+
+    return 0;
+}
+```
+
+`UNDS_IMPLEMENTATION`은 헤더 파일을 포함하면서 각 함수의 구현까지 포함하라는 의미이다.  
+따라서 C 파일을 하나만 사용하는 경우 필수적으로 선언해주어야 한다.  
+
+다중 파일을 사용한다면 여러 개의 C 파일 중 하나의 파일에서만 선언해주면 된다.  
+이렇게 하면 링킹 과정에서 중복된 심볼 에러를 피할 수 있다.  
+
+단일 헤더 파일 내부에서 헤더와 구현을 구분하는 `UNDS_IMPLEMENTATION`의 아이디어는 [여기](https://github.com/nothings/stb/blob/master/docs/stb_howto.txt)에서 일부 참고했다.  
+
 ## **포인터와 동적할당을 활용한 구현**  
 본 리포지토리에 구현된 자료구조는 포인터와 동적할당을 활용해 구현되었다.  
 따라서 해당 자료구조를 활용하려면 포인터와 동적할당에 대해 알고 있어야 한다.  
